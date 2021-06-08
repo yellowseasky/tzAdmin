@@ -1,0 +1,62 @@
+<template>
+  <el-tooltip class="item" effect="dark" :content="isFullscreen?'恢复':'全屏'" placement="bottom">
+    <div>
+      <svg-icon :icon-class="isFullscreen?'exit-fullscreen':'fullscreen'" @click="click" />
+    </div>
+  </el-tooltip>
+</template>
+
+<script>
+import screenfull from 'screenfull'
+
+export default {
+  name: 'Screenfull',
+  data() {
+    return {
+      isFullscreen: false
+    }
+  },
+  mounted() {
+    this.init()
+  },
+  beforeDestroy() {
+    this.destroy()
+  },
+  methods: {
+    click() {
+      if (!screenfull.isEnabled) {
+        this.$message({
+          message: '你的浏览器不能工作',
+          type: 'warning'
+        })
+        return false
+      }
+      screenfull.toggle()
+    },
+    change() {
+      this.isFullscreen = screenfull.isFullscreen
+    },
+    init() {
+      if (screenfull.isEnabled) {
+        screenfull.on('change', this.change)
+      }
+    },
+    destroy() {
+      if (screenfull.isEnabled) {
+        screenfull.off('change', this.change)
+      }
+    }
+  }
+}
+</script>
+
+<style scoped>
+.screenfull-svg {
+  display: inline-block;
+  cursor: pointer;
+  fill: #5a5e66;;
+  width: 20px;
+  height: 20px;
+  vertical-align: 10px;
+}
+</style>
