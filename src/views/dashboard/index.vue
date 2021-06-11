@@ -27,4 +27,13 @@ export default {
     line-height: 46px;
   }
 }
+.dashboard-container {
+  // width: 100%;
+  // height: 500px;
+  // width: 82vw;
+  // height: 82vh;
+  // background-image: url('../../assets/CPM/CPM_lg.jpg');
+  // background-size: 100% 100%;
+  // background-repeat: no-repeat;
+}
 </style>

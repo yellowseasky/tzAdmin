@@ -25,7 +25,7 @@ export function supplierOrder() {
   })
 }
 // 外协订单
-export function orderList(empId, sTime = '', eTime = '') {
+export function orderList(data) {
   return request({
     url: '/DefaultApi/Cmd',
     method: 'post',
@@ -34,13 +34,22 @@ export function orderList(empId, sTime = '', eTime = '') {
       ctrl: 'Outside',
       act: 'GetOutsideOrderList',
       accessToken: getToken(),
-      data:
-      {
-        empId,
-        outOType: '',
-        sTime,
-        eTime
-      }
+      data
+      // {
+      //   pageSize: '20',
+      //   pageNumber: '2',
+      //   empId: '76369973',
+      //   outOType: '',
+      //   sTime: '',
+      //   eTime: ''
+      // }
+      // data:
+      // {
+      //   empId,
+      //   outOType: '',
+      //   sTime,
+      //   eTime
+      // }
     }
   })
 }

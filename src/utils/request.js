@@ -8,7 +8,7 @@ const service = axios.create({
   // baseURL: process.env.VUE_APP_BASE_API,
   baseURL: '/api',
   withCredentials: true, // send cookies when cross-domain requests
-  timeout: 50000 // request timeout
+  timeout: 60 * 1000 // request timeout
 })
 
 // request interceptor
@@ -51,7 +51,7 @@ service.interceptors.response.use(
       Message({
         message: res.message || 'Error',
         type: 'error',
-        duration: 5 * 1000
+        duration: 10 * 1000
       })
 
       // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;

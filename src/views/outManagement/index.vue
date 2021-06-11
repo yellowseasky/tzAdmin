@@ -2,7 +2,7 @@
   <div class="app-container">
     <!-- 表格菜单栏 -->
     <div class="filter-container">
-      <el-input v-model="searchListId" placeholder="订单号查询" style="width: 200px;" class="filter-item" clearable @clear="clearInput" @keyup.enter.native="handleFilter" />
+      <el-input v-model="searchListId" placeholder="请输入单据编号" style="width: 200px;" class="filter-item" clearable @clear="clearInput" @keyup.enter.native="handleFilter" />
       <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter()">查询</el-button>
       <div class="block">
         <el-date-picker
@@ -25,15 +25,21 @@
     </div>
     <!-- 过滤容器 -->
     <div class="filter-container-table" />
-    <!-- 外协订单 -->
     <el-table
       v-loading="listLoading"
-      :data="list.slice((currentPage-1)*pagesize, currentPage*pagesize)"
+      stripe
+      :data="list"
       border
       highlight-current-row
       style="width: 100%"
       @cell-click="clickRowList"
     >
+
+      <el-table-column align="center" label="ID" width="70">
+        <template slot-scope="{row}">
+          <span>{{ row.rownum }}</span>
+        </template>
+      </el-table-column>
 
       <el-table-column align="center" label="创建人">
         <template slot-scope="{row}">
@@ -82,7 +88,7 @@
       </el-table-column>
     </el-table>
     <!-- pagination -->
-    <pagination v-show="list.length>pagesize" :total="list.length" :page.sync="currentPage" @pagination="getList" />
+    <pagination v-show="total>listQuery.pageSize" :total="total" :page-size="listQuery.pageSize" :page.sync="listQuery.pageNumber" :limit.sync="listQuery.pageSize" @pagination="pageSize" />
     <!-- 订单详细 -->
     <el-dialog :visible.sync="dialogTableVisible" width="80%">
       <div slot="title" class="dialog-title">
@@ -96,6 +102,7 @@
         ref="detailListButtom"
         v-loading="listLoading"
         :data="DetailList"
+        stripe
         border
         height="400"
         highlight-current-row
@@ -205,6 +212,7 @@
 </template>
 
 <script>
+import { downloadFile } from '../../utils/index'
 import { orderList, orderListDetail, getNewFile, getProfileFile } from '@/api/order'
 import { mapGetters } from 'vuex'
 import Pagination from '@/components/Pagination'
@@ -227,6 +235,16 @@ export default {
     return {
       list: [],
       DetailList: [],
+      listQuery: {
+        pageSize: 20,
+        pageNumber: 1,
+        empId: '',
+        outOCode: '',
+        outOType: '',
+        sTime: '',
+        eTime: ''
+      },
+      total: 0, // 总页
       listLoading: true,
       fileDownloadLoading: false, // 最新文件
       profileFileLoading: false, // 型面文件
@@ -234,8 +252,6 @@ export default {
       dialogTableVisible: false, // 详细外协订单框
       MBomDetCode: [], // 获取最新文件编号
       projectCode: [], // 型面文件编号
-      pagesize: 10, // 默认分页每页数据量
-      currentPage: 1, // 默认展示第一页数据
       ia: null, // 文件下载数据
       pickerOptions: {
         disabledDate(time) {
@@ -279,8 +295,14 @@ export default {
     this.getList()
   },
   methods: {
+    // 分页设定页数据个数
+    pageSize(val) {
+      this.listQuery.pageSize = val.limit
+      this.getList()
+    },
     // 搜索框清空触发数据
     clearInput() {
+      this.listQuery.outOCode = ''
       this.getList()
     },
     // 日期选择器数据处理
@@ -288,14 +310,14 @@ export default {
       try {
         const startTime = timeChange(val[0])
         const endTime = timeChange(val[1])
-        const { data } = await orderList(this.empId, startTime, endTime)
-        this.list = data.sort(sortId)
+        this.listQuery.sTime = startTime
+        this.listQuery.eTime = endTime
+        this.getList()
       } catch (e) {
         // 清理了日期
+        this.listQuery.sTime = ''
+        this.listQuery.eTime = ''
         this.getList()
-      }
-      function sortId(a, b) {
-        return Date.parse(b.OutOCreateTime) - Date.parse(a.OutOCreateTime)
       }
       this.listLoading = false
     },
@@ -303,11 +325,11 @@ export default {
     async handleFilter() {
       this.listLoading = true
       if (this.searchListId) {
-        const { data } = await orderList(this.empId)
-        this.list = data.filter(data => {
-          return data.OutOCode.includes(this.searchListId)
-        })
+        this.listQuery.outOCode = this.searchListId
+        this.listQuery.pageNumber = 1
+        this.getList()
       } else {
+        this.listQuery.outOCode = ''
         this.getList()
       }
       this.listLoading = false
@@ -320,22 +342,23 @@ export default {
       const outOIdArray = val.map(item => item.MBomDetCode)
       const projectCodeArray = val.map(item => item.ProjectCode)
       this.MBomDetCode = outOIdArray
-      // console.log('MBomDetCode', this.MBomDetCode)
       this.projectCode = projectCodeArray
     },
     // 请求外协订单数据
     async getList() {
       this.listLoading = true
-      const { data } = await orderList(this.empId)
-      this.list = data.sort(sortId)
+      this.listQuery.empId = this.empId
+      const { data } = await orderList(this.listQuery)
+      this.list = data[0].list
+      this.total = data[1].totalCount
+      // this.list = data.sort(sortId)
       // 数据按日期倒叙排列
-      function sortId(a, b) {
-        return Date.parse(b.OutOCreateTime) - Date.parse(a.OutOCreateTime)
-      }
-      // console.log('thislist', this.list)
+      // function sortId(a, b) {
+      //   return Date.parse(b.OutOCreateTime) - Date.parse(a.OutOCreateTime)
+      // }
       this.listLoading = false
     },
-    // 下载文件
+    // 下载最新文件
     fileDownload() {
       this.fileDownloadLoading = true
       if (this.MBomDetCode.length < 1) {
@@ -347,14 +370,17 @@ export default {
       } else {
         this.MBomDetCode.map(Code => {
           getNewFile(Code).then(res => {
+            if (!res.success) {
+              Message({
+                message: res.message,
+                type: 'error',
+                duration: 5 * 1000
+              })
+              return
+            }
             const newFile = res.data[0].newFile
-            this.toBinary(newFile)
-          }).catch(err => {
-            Message({
-              message: `文件下载错误${err},或丢失`,
-              type: 'error',
-              duration: 10 * 1000
-            })
+            const bomCodeName = res.data[0].bomCode + '.prt'
+            downloadFile(bomCodeName, newFile)
           })
           // 重置多选框
           this.$refs.detailListButtom.clearSelection()
@@ -375,53 +401,23 @@ export default {
       } else {
         this.projectCode.forEach(Code => {
           getProfileFile(Code).then(res => {
+            if (!res.success) {
+              Message({
+                message: res.message,
+                type: 'error',
+                duration: 5 * 1000
+              })
+              return
+            }
             const newFile = res.data[0].newFile
-            this.toBinary(newFile)
-          }).catch(err => {
-            Message({
-              message: `文件下载错误${err}或丢失`,
-              type: 'error',
-              duration: 5 * 1000
-            })
+            const bomCodeName = res.data[0].bomCode + '.prt'
+            downloadFile(bomCodeName, newFile)
           })
           // 重置多选框
           this.profileFileLoading = false
           this.$refs.detailListButtom.clearSelection()
         })
       }
-    },
-    // 转二进制
-    toBinary(file) {
-      // 二进制数组转换
-      var ab = new ArrayBuffer(file.length)
-      this.ia = new Uint8Array(ab)
-      for (var i = 0; i < file.length; i++) {
-        this.ia[i] = file.charCodeAt(i)
-      }
-      this.downFile(this.ia)
-    },
-    // 将内存中的数据保存为文件下载到本地
-    downFile(json1) {
-      /* var elementA = document.createElement('a')
-      elementA.setAttribute('href', 'data:application/x-prt;charset=utf-8,' + json1)
-      elementA.setAttribute('download', +new Date() + '.prt')
-      elementA.style.display = 'none'
-      document.body.appendChild(elementA)
-      elementA.click()
-      document.body.removeChild(elementA)*/
-      // 兼容IE
-      if (window.navigator.msSaveBlob) {
-        const blob = new Blob(['json1'], { type: 'application/x-prt,charset=utf-8' })
-        window.navigator.msSaveBlob(blob, +new Date() + '.prt')
-      }
-      var downloadA = document.createElement('a')
-      var data = new Blob([json1], { type: 'application/x-prt' + ';charset=UTF-8' })
-      var downloadUrl = window.URL.createObjectURL(data)
-      downloadA.setAttribute('href', downloadUrl)
-      downloadA.setAttribute('download', +new Date() + '.prt')
-      document.body.appendChild(downloadA)
-      downloadA.click()
-      document.body.removeChild(downloadA)
     },
     // 点击某个行数触发
     clickRowList(data) {
@@ -457,7 +453,6 @@ export default {
     vertical-align: middle;
     margin-bottom: 10px;
   }
-
 .el-button {
       margin-right: 20px;
     }

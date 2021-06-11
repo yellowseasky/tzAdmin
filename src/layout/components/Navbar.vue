@@ -16,7 +16,7 @@
                 主页
               </el-dropdown-item>
             </router-link>
-            <el-dropdown-item divided @click.native="logout">
+            <el-dropdown-item @click.native="logout">
               <span style="display:block;">退出登录</span>
             </el-dropdown-item>
             <a target="_blank" href="https://github.com/PanJiaChen/vue-admin-template/" />
@@ -26,7 +26,7 @@
           </el-dropdown-menu>
         </el-dropdown>
         <screenfull id="screenfull" class="right-menu-item hover-effect" />
-        <el-tooltip class="item" effect="dark" content="退出登录" placement="bottom">
+        <el-tooltip class="item" effect="dark" content="退出登录" placement="bottom" :enterable="false">
           <svg-icon icon-class="signOut" style="font-size:38px" class="right-menu-item hover-effect" @click.native="logout" />
         </el-tooltip>
       </div>
@@ -229,7 +229,8 @@ export default {
             })
             setPsw(this.ruleForm.newPass)
             this.resetForm()
-            this.logout()
+            this.$store.dispatch('user/resetToken')
+            this.$router.push(`/login?redirect=${this.$route.fullPath}`)
           }).catch(err => {
             this.$message({
               message: err,
@@ -267,8 +268,24 @@ export default {
       this.$store.dispatch('app/toggleSideBar')
     },
     async logout() {
-      await this.$store.dispatch('user/resetToken')
-      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+      this.$confirm('此操作将退出登录, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$message({
+          type: 'success',
+          message: '退出登录成功!'
+        })
+        // await this.$store.dispatch('user/resetToken')
+        this.$store.dispatch('user/resetToken')
+        this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消'
+        })
+      })
     },
     timeBar() {
       var t = null

@@ -1,6 +1,8 @@
 // import { login, logout, getInfo } from '@/api/user'
 import { login, getInfo } from '@/api/user'
 import { getToken, setToken, removeToken, setId, setPsw, removeId, removePsw } from '@/utils/auth'
+import { Message } from 'element-ui'
+import router from '@/router/index'
 // import { resetRouter } from '@/router'
 
 const getDefaultState = () => {
@@ -54,12 +56,19 @@ const actions = {
     })
   },
   // get user info
-  getInfo({ commit, state }, { username, password }) {
+  getInfo({ dispatch, commit, state }, { username, password }) {
     return new Promise((resolve, reject) => {
       getInfo(username, password).then(response => {
-      // getInfo({ ctrl: 'Employee', act: 'Login', accessToken: state.token, data: { EmpCode: username.trim(), EmpPassword: password }}).then(response => {
         const { data } = response
         if (!data) {
+          // token已过期
+          Message({
+            message: 'token已过期,请重新登录',
+            type: 'error',
+            duration: 3 * 1000
+          })
+          dispatch('resetToken')
+          router.push({ path: '/login' })
           return reject('Verification failed, please Login again.')
         }
         const { empId, empType } = data

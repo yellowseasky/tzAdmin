@@ -30,7 +30,7 @@ router.beforeEach(async(to, from, next) => {
         next()
         NProgress.done()
       } else {
-        await store.dispatch('user/getInfo', { username: getPsw(), password: getId() }).then(res => {
+        await store.dispatch('user/getInfo', { username: getId(), password: getPsw() }).then(res => {
           next()
           NProgress.done()
         })
