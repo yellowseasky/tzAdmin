@@ -3,7 +3,7 @@
     <!-- 表格菜单栏 -->
     <div class="filter-container">
       <el-input v-model="searchListId" placeholder="请输入单据编号" style="width: 200px;" class="filter-item" clearable @clear="clearInput" @keyup.enter.native="handleFilter" />
-      <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter()">查询</el-button>
+      <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">查询</el-button>
       <div class="block">
         <el-date-picker
           v-model="value2"
@@ -35,7 +35,7 @@
       @cell-click="clickRowList"
     >
 
-      <el-table-column align="center" label="ID" width="70">
+      <el-table-column align="center" label="ID" width="50">
         <template slot-scope="{row}">
           <span>{{ row.rownum }}</span>
         </template>
@@ -43,7 +43,7 @@
 
       <el-table-column align="center" label="创建人">
         <template slot-scope="{row}">
-          <span>{{ row.EmpName_Creat }}</span>
+          <el-tag size="medium">{{ row.EmpName_Creat }}</el-tag>
         </template>
       </el-table-column>
 
@@ -93,7 +93,7 @@
     <el-dialog :visible.sync="dialogTableVisible" width="80%">
       <div slot="title" class="dialog-title">
         <svg-icon icon-class="stream-list" />
-        <span class="title-text">订单详细</span>
+        <span class="title-text" style="font-weight: 600; color:#666666">订单详细</span>
         <div class="button-right">
           <span class="title-close" @click="cancel" />
         </div>
@@ -112,6 +112,7 @@
         <el-table-column
           type="selection"
           width="55"
+          align="center"
         />
 
         <el-table-column align="center" label="物料编码">
@@ -199,7 +200,7 @@
         </el-table-column>
       </el-table>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogTableVisible = false">确 定</el-button>
+        <el-button type="primary" @click="cancel">确 定</el-button>
         <el-button :loading="fileDownloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="fileDownload">
           下载最新文件
         </el-button>
@@ -212,12 +213,15 @@
 </template>
 
 <script>
-import { downloadFile } from '../../utils/index'
+// import { downloadFile } from '../../utils/index'
 import { orderList, orderListDetail, getNewFile, getProfileFile } from '@/api/order'
 import { mapGetters } from 'vuex'
 import Pagination from '@/components/Pagination'
 import { Message } from 'element-ui'
 import { timeChange } from '@/utils'
+import JSZip from 'jszip'
+import { saveAs } from 'file-saver'
+
 export default {
   name: 'InlineEditTable',
   components: { Pagination },
@@ -325,6 +329,7 @@ export default {
     async handleFilter() {
       this.listLoading = true
       if (this.searchListId) {
+        this.paginationShow = false
         this.listQuery.outOCode = this.searchListId
         this.listQuery.pageNumber = 1
         this.getList()
@@ -367,26 +372,40 @@ export default {
           type: 'error',
           duration: 5 * 1000
         })
+        this.fileDownloadLoading = false
       } else {
-        this.MBomDetCode.map(Code => {
-          getNewFile(Code).then(res => {
+        const zip = JSZip()
+        const promises = []
+        this.MBomDetCode.forEach(Code => {
+          const promise = getNewFile(Code).then(res => {
             if (!res.success) {
               Message({
-                message: res.message,
+                message: `文件编号:${Code}发生错误,${res.message}`,
                 type: 'error',
                 duration: 5 * 1000
               })
               return
+            } else {
+              const newFile = res.data[0].newFile
+              const bomCodeName = res.data[0].bomCode + '.prt'
+              // downloadFile(bomCodeName, newFile)
+              const blob = this.base64ToBlob(newFile)
+              zip.file(bomCodeName, blob)
             }
-            const newFile = res.data[0].newFile
-            const bomCodeName = res.data[0].bomCode + '.prt'
-            downloadFile(bomCodeName, newFile)
           })
-          // 重置多选框
-          this.$refs.detailListButtom.clearSelection()
+          promises.push(promise)
         })
+        if (promises.length > 0) {
+          Promise.all(promises).then((res) => {
+            zip.generateAsync({ type: 'blob' }).then(content => {
+              saveAs(content, `${(new Date()).valueOf()}.zip`)
+            })
+            this.fileDownloadLoading = false
+          })
+        }
       }
-      this.fileDownloadLoading = false
+      // 重置多选框
+      this.$refs.detailListButtom.clearSelection()
     },
     // 下载型面文件
     profileFileDownload() {
@@ -399,8 +418,10 @@ export default {
         })
         this.profileFileLoading = false
       } else {
+        const zip = new JSZip()
+        const promises = []
         this.projectCode.forEach(Code => {
-          getProfileFile(Code).then(res => {
+          const promise = getProfileFile(Code).then(res => {
             if (!res.success) {
               Message({
                 message: res.message,
@@ -408,17 +429,42 @@ export default {
                 duration: 5 * 1000
               })
               return
+            } else {
+              const newFile = res.data[0].newFile
+              const bomCodeName = res.data[0].bomCode + '.prt'
+              // downloadFile(bomCodeName, newFile)
+              const blob = this.base64ToBlob(newFile)
+              zip.file(bomCodeName, blob)
+              promises.push(promise)
             }
-            const newFile = res.data[0].newFile
-            const bomCodeName = res.data[0].bomCode + '.prt'
-            downloadFile(bomCodeName, newFile)
           })
-          // 重置多选框
-          this.profileFileLoading = false
-          this.$refs.detailListButtom.clearSelection()
         })
+        if (promises.length > 0) {
+          Promise.all(promises).then((res) => {
+            zip.generateAsync({ type: 'blob' }).then(content => {
+              saveAs(content, `${(new Date()).valueOf()}.zip`)
+            })
+            this.profileFileLoading = false
+          })
+        }
       }
+      // 重置多选框
+      this.$refs.detailListButtom.clearSelection()
+      this.profileFileLoading = false
     },
+    // base转blob
+    base64ToBlob(code) {
+      const parts = code.split(';base64,')
+      // const contentType = parts[0].split(/:(.*?);/)[1]
+      const raw = window.atob(parts)
+      const rawLength = raw.length
+      const uInt8Array = new Uint8Array(rawLength)
+      for (let i = 0; i < rawLength; ++i) {
+        uInt8Array[i] = raw.charCodeAt(i)
+      }
+      return new Blob([uInt8Array], { type: 'application/x-prt' })
+    },
+
     // 点击某个行数触发
     clickRowList(data) {
     },
@@ -437,7 +483,9 @@ export default {
     },
     // 关闭对话框
     cancel() {
-      this.dialogFormVisible = false
+      this.fileDownloadLoading = false
+      this.profileFileLoading = false
+      this.dialogTableVisible = false
     }
   }
 }
@@ -453,13 +501,14 @@ export default {
     vertical-align: middle;
     margin-bottom: 10px;
   }
-.el-button {
-      margin-right: 20px;
-    }
+  .el-button {
+    margin-right: 20px;
+  }
 
 }
 .edit-input {
   padding-right: 100px;
+  color: rgb(50, 50, 50);
 }
 .cancel-btn {
   position: absolute;

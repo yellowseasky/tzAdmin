@@ -4,10 +4,30 @@
       <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
       <breadcrumb class="breadcrumb-container" />
       <div class="right-menu">
-        <div class="right-menu-item hover-effect">{{ currentTime }}</div>
-        <el-dropdown class="avatar-container" trigger="click" style="top:-10px;">
+        <el-tooltip class="item" effect="dark" :content="currentTime" placement="bottom" :enterable="false">
+          <div class="right-menu-item hover-effect">{{ currentTime }}</div>
+        </el-tooltip>
+        <screenfull id="screenfull" class="right-menu-item hover-effect" />
+        <!-- <el-tooltip class="item" effect="dark" content="退出登录" placement="bottom" :enterable="false"> -->
+        <!-- <el-popconfirm
+            confirm-button-text="继续"
+            cancel-button-text="不用了"
+            icon="el-icon-info"
+            icon-color="red"
+            title="此操作将退出登录, 是否继续?"
+            @onConfirm="outlo"
+          > -->
+        <el-tooltip class="item" effect="dark" content="退出登录" placement="bottom" :enterable="false">
+          <svg-icon icon-class="signOut" style="font-size:52px" class="right-menu-item hover-effect" @click="outlo" />
+        </el-tooltip>
+        <!-- </el-popconfirm> -->
+        <!-- </el-tooltip> -->
+        <el-dropdown class="right-menu-item avatar-container" trigger="click">
           <div class="avatar-wrapper">
-            <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
+            <span class="user-avatar">
+              <svg-icon icon-class="user" />
+            </span>
+            <span>{{ empType }}</span>
             <i class="el-icon-caret-bottom" />
           </div>
           <el-dropdown-menu slot="dropdown" class="user-dropdown">
@@ -16,19 +36,11 @@
                 主页
               </el-dropdown-item>
             </router-link>
-            <el-dropdown-item @click.native="logout">
-              <span style="display:block;">退出登录</span>
-            </el-dropdown-item>
-            <a target="_blank" href="https://github.com/PanJiaChen/vue-admin-template/" />
             <el-dropdown-item divided @click.native="changePsw()">
               <span style="display:block;">修改密码</span>
             </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
-        <screenfull id="screenfull" class="right-menu-item hover-effect" />
-        <el-tooltip class="item" effect="dark" content="退出登录" placement="bottom" :enterable="false">
-          <svg-icon icon-class="signOut" style="font-size:38px" class="right-menu-item hover-effect" @click.native="logout" />
-        </el-tooltip>
       </div>
     </div>
     <!-- 修改密码 -->
@@ -76,8 +88,8 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="cancelForm()">取 消</el-button>
-        <el-button type="primary" @click="submitForm()">确 定 修 改</el-button>
+        <el-button @click="cancelForm">取 消</el-button>
+        <el-button type="primary" @click="submitForm">确 定 修 改</el-button>
       </div>
     </el-dialog>
   </div>
@@ -163,7 +175,8 @@ export default {
   computed: {
     ...mapGetters([
       'sidebar',
-      'avatar'
+      'avatar',
+      'empType'
     ])
   },
   created() {
@@ -175,11 +188,7 @@ export default {
         (new Date().getMonth() + 1) +
         '月' +
         new Date().getDate() +
-        '日' +
-        new Date().getHours() +
-        '时' +
-        new Date().getMinutes() +
-        '分'
+        '日'
     }, 1000)
   },
   beforeDestroy() {
@@ -195,7 +204,6 @@ export default {
       this.resetForm()
     },
     showPwd(val) {
-      console.log('val', val)
       if (val === 'oldPassType') {
         if (this.PassType.oldPassType === 'password') {
           this.PassType.oldPassType = ''
@@ -267,41 +275,13 @@ export default {
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
     },
-    async logout() {
-      this.$confirm('此操作将退出登录, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.$message({
-          type: 'success',
-          message: '退出登录成功!'
-        })
-        // await this.$store.dispatch('user/resetToken')
-        this.$store.dispatch('user/resetToken')
-        this.$router.push(`/login?redirect=${this.$route.fullPath}`)
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消'
-        })
+    outlo() {
+      this.$message({
+        type: 'success',
+        message: '退出登录成功!'
       })
-    },
-    timeBar() {
-      var t = null
-      t = setTimeout(time, 1000)// 開始运行
-      function time() {
-        clearTimeout(t)// 清除定时器
-        var dt = new Date()
-        var y = dt.getFullYear()
-        var mt = dt.getMonth() + 1
-        var day = dt.getDate()
-        var h = dt.getHours()// 获取时
-        var m = dt.getMinutes()// 获取分
-        // var s = dt.getSeconds()// 获取秒
-        document.querySelector('#datetime').innerHTML = y + '年' + mt + '月' + day + '日' + h + '时' + m + '分'
-        t = setTimeout(time, 1000) // 设定定时器，循环运行
-      }
+      this.$store.dispatch('user/resetToken')
+      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     }
   }
 }
@@ -314,7 +294,6 @@ export default {
   position: relative;
   background: #fff;
   box-shadow: 0 1px 4px rgba(0,21,41,.08);
-  // margin-top: 50px;
   .hamburger-container {
     line-height: 46px;
     height: 100%;
@@ -342,12 +321,9 @@ export default {
     .datetime {
       margin: 0 10px;
     }
-    .item {
-      margin: 4px;
-    }
     .right-menu-item {
       display: inline-block;
-      padding: 0 8px;
+      padding: 0 15px;
       height: 100%;
       font-size: 18px;
       color: #5a5e66;
@@ -358,28 +334,26 @@ export default {
         transition: background .3s;
 
         &:hover {
-          background: rgba(0, 0, 0, .025)
+          background: rgba(0, 0, 0, .125)
         }
       }
     }
 
     .avatar-container {
-      margin-right: 30px;
-
+      height: 100%;
+      margin-right: 10px;
       .avatar-wrapper {
         position: relative;
-
         .user-avatar {
-          cursor: pointer;
+          font-size: 18px;
+          margin-right: 5px;
           width: 40px;
-          height: 40px;
-          border-radius: 10px;
         }
 
         .el-icon-caret-bottom {
           cursor: pointer;
           position: absolute;
-          right: -20px;
+          right: -12px;
           top: 25px;
           font-size: 12px;
         }

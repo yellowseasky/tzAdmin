@@ -2,15 +2,18 @@
   <div class="login-container">
     <div class="login-box">
       <div class="header-title">
-        <div class="logo-img"><img src="../../assets/logo/CPM.png" alt=""></div>
-        <div class="logo-title">
+        <!-- <div class="logo-img"><img src="../../assets/logo/CPM.png" alt=""></div> -->
+        <!-- <div class="logo-title">
           天倬供应链资源管理系统
-        </div>
+        </div> -->
+      </div>
+      <div class="avatar_box">
+        <img src="../../assets/logo/CPM.png" alt="">
       </div>
       <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" autocomplete="on" label-position="left">
 
         <div class="title-container">
-          <h3 class="title">用户登录</h3>
+          <h3 class="title">天倬供应链资源管理系统</h3>
         </div>
 
         <el-form-item prop="username" class="input-item">
@@ -187,8 +190,8 @@ $cursor: rgb(54, 54, 54);
 <style lang="scss" scoped>
 $bg:#2d3a4b;
 $dark_gray:#000000;
-$light_gray:rgb(29, 28, 28);
-
+$light_gray:rgb(94, 94, 94);
+$border_gray: #ccc;
 .login-container {
   position: relative;
   min-height: 100%;
@@ -199,46 +202,62 @@ $light_gray:rgb(29, 28, 28);
   .login-box {
     position: absolute;
     top: 50%;
-    left: 62%;
-    // transform: translateY(-50%) translateX(-50%);
-    transform: translateY(-50%);
-    width: 30%;
-    // width: 450px;
+    left: 64%;
+    transform: translateY(-60%);
+    // width: 32%;
+    width: 520px;
     max-width: 100%;
-  }
-  .header-title {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    height: 100px;
-    .logo-img {
-      width: 20%;
-      height: 100%;
+    .avatar_box {
+      position: relative;
+      width: 130px;
+      height: 130px;
+      top: 65px;
+      border: 1px solid $border_gray;
+      border-radius: 50%;
+      padding: 10px;
+      background-color: #fff;
+      margin: auto;
+      box-shadow: 0 0 20px $border_gray;
       img {
+        background-color: #DEDEDE;
+        padding: 5px;
         width: 100%;
         height: 100%;
+        border-radius: 50%;
       }
     }
-
-    .logo-title {
-      text-align: start;
-      height: 100%;
-      // width: 80%;
-      font-size: 29px;
-      font-weight: 600;
-      line-height: 100px;
-    }
   }
+  // .header-title {
+  //   display: flex;
+  //   justify-content: center;
+  //   width: 100%;
+  //   height: 25px;
+  //   .logo-img {
+  //     width: 20%;
+  //     height: 100%;
+  //     img {
+  //       width: 100%;
+  //       height: 100%;
+  //     }
+  //   }
+
+  //   .logo-title {
+  //     text-align: start;
+  //     height: 100%;
+  //     font-size: 2vw;
+  //     font-weight: bolder;
+  //     line-height: 100px;
+  //   }
+  // }
   .login-form {
-    // position: relative;
-    padding: 50px 35px 0;
+    padding: 65px 35px 0;
     width: 100%;
     border-radius: 5px;
-    box-shadow: 0 0 10px #ccc,0 0 10px #ccc;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
     overflow: hidden;
     .input-item {
-      margin: 40px 0;
-      box-shadow: 0 0 2px #ccc,0 0 2px #ccc;
+      margin: 30px 0;
+      box-shadow: 0 0 2px $border_gray,0 0 2px $border_gray;
     }
   }
 
@@ -264,15 +283,17 @@ $light_gray:rgb(29, 28, 28);
 
   .title-container {
     position: relative;
+    border-bottom: 2px solid $border_gray;
     .title {
       font-size: 26px;
       color: $light_gray;
-      margin: 0px auto 50px auto;
       text-align: center;
-      font-weight: bold;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-weight: 700;
     }
   }
-
   .show-pwd {
     position: absolute;
     right: 10px;
@@ -289,10 +310,25 @@ $light_gray:rgb(29, 28, 28);
     bottom: 6px;
   }
 
-  @media only screen and (max-width: 470px) {
-    .thirdparty-button {
-      display: none;
+  @media only screen and (max-width: 1480px) {
+    .login-box {
+      top: 50%;
+      left: 55%;
+      transform: translateY(-60%);
+      .login-form {
+        background-color: #fff;
+      }
     }
   }
+
+  @media only screen and (max-width: 1200px) {
+    .login-box {
+      transform: translate(-50%, -50%);
+      width: 50%;
+      top: 40%;
+      left: 50%;
+    }
+  }
+
 }
 </style>

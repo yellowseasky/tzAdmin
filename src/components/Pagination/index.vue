@@ -72,6 +72,8 @@ export default {
       }
     }
   },
+  watch: {
+  },
   methods: {
     handleSizeChange(val) {
       this.$emit('pagination', { page: this.currentPage, limit: val })

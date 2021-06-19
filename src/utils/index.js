@@ -1,4 +1,5 @@
-
+// import JSZip from 'jszip'
+// import { saveAs } from 'file-saver'
 /**
  * Parse the time to string
  * @param {(Object|string|number)} time
@@ -124,32 +125,32 @@ export function timeChange(time) {
 }
 
 // base64转文件下载
-export function downloadFile(fileName, content) {
-  const blob = base64ToBlob(content) // new Blob([content]);
-  if (window.navigator.msSaveOrOpenBlob) {
-    navigator.msSaveBlob(blob, fileName)
-  } else {
-    const link = document.createElement('a')
-    link.href = window.URL.createObjectURL(blob)
-    link.download = fileName
+// export function downloadFile(fileName, content) {
+// const blob = base64ToBlob(content)
+// if (window.navigator.msSaveOrOpenBlob) {
+//   navigator.msSaveBlob(blob, fileName)
+// } else {
+// const link = document.createElement('a')
+// link.href = window.URL.createObjectURL(content)
+// link.download = fileName
 
-    // 此写法兼容可火狐浏览器
-    document.body.appendChild(link)
-    const evt = document.createEvent('MouseEvents')
-    evt.initEvent('click', false, false)
-    link.dispatchEvent(evt)
-    document.body.removeChild(link)
-  }
-  // base转blob
-  function base64ToBlob(code) {
-    const parts = code.split(';base64,')
-    // const contentType = parts[0].split(/:(.*?);/)[1]
-    const raw = window.atob(parts)
-    const rawLength = raw.length
-    const uInt8Array = new Uint8Array(rawLength)
-    for (let i = 0; i < rawLength; ++i) {
-      uInt8Array[i] = raw.charCodeAt(i)
-    }
-    return new Blob([uInt8Array], { type: 'application/x-prt' })
-  }
-}
+// 此写法兼容可火狐浏览器
+// document.body.appendChild(link)
+// const evt = document.createEvent('MouseEvents')
+// evt.initEvent('click', false, false)
+// link.dispatchEvent(evt)
+// document.body.removeChild(link)
+// }
+// base转blob
+// function base64ToBlob(code) {
+//   const parts = code.split(';base64,')
+//   // const contentType = parts[0].split(/:(.*?);/)[1]
+//   const raw = window.atob(parts)
+//   const rawLength = raw.length
+//   const uInt8Array = new Uint8Array(rawLength)
+//   for (let i = 0; i < rawLength; ++i) {
+//     uInt8Array[i] = raw.charCodeAt(i)
+//   }
+//   return new Blob([uInt8Array], { type: 'application/x-prt' })
+// }
+

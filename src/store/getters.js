@@ -7,6 +7,7 @@ const getters = {
   avatar: state => state.user.avatar,
   name: state => state.user.name,
   empId: state => state.user.empId,
-  empType: state => state.user.empType
+  permission_routes: state => state.permission.routes,
+  empType: state => state.user.empType // 用户类型
 }
 export default getters

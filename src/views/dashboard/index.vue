@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard-container">
-    <div class="dashboard-text">欢迎来到天倬外企订单管理系统</div>
+    <!-- <div class="dashboard-text">欢迎来到天倬外企订单管理系统</div> -->
   </div>
 </template>
 
@@ -20,7 +20,7 @@ export default {
 <style lang="scss" scoped>
 .dashboard {
   &-container {
-    margin: 30px;
+    margin: 10px;
   }
   &-text {
     font-size: 30px;
@@ -28,12 +28,10 @@ export default {
   }
 }
 .dashboard-container {
-  // width: 100%;
-  // height: 500px;
-  // width: 82vw;
-  // height: 82vh;
-  // background-image: url('../../assets/CPM/CPM_lg.jpg');
-  // background-size: 100% 100%;
-  // background-repeat: no-repeat;
+  width: 95vw;
+  height: 85vh;
+  background-image: url('../../assets/CPM/CPM_lg.jpg');
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
 }
 </style>

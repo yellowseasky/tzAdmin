@@ -1,8 +1,8 @@
 // import { login, logout, getInfo } from '@/api/user'
 import { login, getInfo } from '@/api/user'
 import { getToken, setToken, removeToken, setId, setPsw, removeId, removePsw } from '@/utils/auth'
-import { Message } from 'element-ui'
-import router from '@/router/index'
+// import { Message } from 'element-ui'
+import router, { resetRouter } from '@/router/index'
 // import { resetRouter } from '@/router'
 
 const getDefaultState = () => {
@@ -62,11 +62,11 @@ const actions = {
         const { data } = response
         if (!data) {
           // token已过期
-          Message({
-            message: 'token已过期,请重新登录',
-            type: 'error',
-            duration: 3 * 1000
-          })
+          // Message({
+          //   message: '请重新登录!',
+          //   type: 'error',
+          //   duration: 3 * 1000
+          // })
           dispatch('resetToken')
           router.push({ path: '/login' })
           return reject('Verification failed, please Login again.')
@@ -98,12 +98,14 @@ const actions = {
   // },
 
   // remove token
-  resetToken({ commit }) {
+  resetToken({ commit, dispatch }) {
     return new Promise(resolve => {
       removeToken() // must remove  token  first
       removeId()
       removePsw()
       commit('RESET_STATE')
+      resetRouter()
+      dispatch('tagsView/delAllViews', null, { root: true })
       resolve()
     })
   }

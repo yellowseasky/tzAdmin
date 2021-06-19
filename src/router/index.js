@@ -59,7 +59,7 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: '企业总览', icon: 'dashboard' }
+      meta: { title: '企业总览', icon: 'dashboard', affix: true }
     }]
   },
 
@@ -84,6 +84,30 @@ export const constantRoutes = [
   { path: '*', redirect: '/404', hidden: true }
 ]
 
+export const asyncRoutes = [
+  // {
+  //   path: '/documentation',
+  //   component: Layout,
+  //   redirect: '/documentation/index',
+  //   name: 'documentation1',
+  //   meta: {
+  //     title: 'documentation1',
+  //     icon: 'el-icon-s-help',
+  //     roles: ['管理员']
+  //   },
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/documentation/index'),
+  //       name: 'indexdocumentation1',
+  //       meta: {
+  //         title: 'indexdocumentation1',
+  //         roles: ['管理员'] // or you can only set roles in sub nav
+  //       }
+  //     }
+  //   ]
+  // }
+]
 const createRouter = () => new Router({
   // mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
