@@ -51,7 +51,7 @@
           </span>
         </el-form-item>
 
-        <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;font-size:20  px" @click.native.prevent="handleLogin">用户登录</el-button>
+        <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;font-size:18px" @click.native.prevent="handleLogin">用户登录</el-button>
       </el-form>
     </div>
 
@@ -118,12 +118,12 @@ export default {
         if (valid) {
           this.loading = true
           this.$store.dispatch('user/login').then(() => {
-            this.$store.dispatch('user/getInfo', this.loginForm).then(res => {
+            this.$store.dispatch('user/getInfo', this.loginForm).then(ret => {
               this.$router.push({ path: this.redirect || '/' })
               this.loading = false
-            }).catch(() => {
+            }).catch(err => {
               Message({
-                message: '用户名或密码错误',
+                message: err,
                 type: 'error',
                 duration: 5 * 1000
               })

@@ -81,7 +81,7 @@
       <!-- 动作按钮 -->
       <el-table-column label="动作" align="center" width="130" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button type="primary" size="mini" @click="listDetail(row.OutOId)">
+          <el-button type="primary" size="mini" @click="listDetail(row.OutOId, row.OutOCode)">
             订单明细
           </el-button>
         </template>
@@ -253,6 +253,7 @@ export default {
       fileDownloadLoading: false, // 最新文件
       profileFileLoading: false, // 型面文件
       outOId: null,
+      OutOCode: null, // 单据编号
       dialogTableVisible: false, // 详细外协订单框
       MBomDetCode: [], // 获取最新文件编号
       projectCode: [], // 型面文件编号
@@ -364,7 +365,7 @@ export default {
       this.listLoading = false
     },
     // 下载最新文件
-    fileDownload() {
+    async fileDownload() {
       this.fileDownloadLoading = true
       if (this.MBomDetCode.length < 1) {
         Message({
@@ -376,6 +377,8 @@ export default {
       } else {
         const zip = JSZip()
         const promises = []
+        // 文件错误
+        const errorList = []
         this.MBomDetCode.forEach(Code => {
           const promise = getNewFile(Code).then(res => {
             if (!res.success) {
@@ -384,25 +387,34 @@ export default {
                 type: 'error',
                 duration: 5 * 1000
               })
+              errorList.push(res.success)
               return
             } else {
               const newFile = res.data[0].newFile
               const bomCodeName = res.data[0].bomCode + '.prt'
               // downloadFile(bomCodeName, newFile)
               const blob = this.base64ToBlob(newFile)
+              // 存入文件名字和数据
               zip.file(bomCodeName, blob)
             }
           })
           promises.push(promise)
         })
-        if (promises.length > 0) {
-          Promise.all(promises).then((res) => {
+        // console.log('errorList', errorList)
+        Promise.all(promises).then((res) => {
+          if (promises.length > errorList.length) {
             zip.generateAsync({ type: 'blob' }).then(content => {
-              saveAs(content, `${(new Date()).valueOf()}.zip`)
+              saveAs(content, `${this.OutOCode}.zip`)
             })
-            this.fileDownloadLoading = false
-          })
-        }
+          } else {
+            Message({
+              message: `文件全部发生错误,请联系文件提供方！`,
+              type: 'error',
+              duration: 3 * 1000
+            })
+          }
+          this.fileDownloadLoading = false
+        })
       }
       // 重置多选框
       this.$refs.detailListButtom.clearSelection()
@@ -414,20 +426,23 @@ export default {
         Message({
           message: '请选择需要下载的文件',
           type: 'error',
-          duration: 5 * 1000
+          duration: 3 * 1000
         })
         this.profileFileLoading = false
       } else {
         const zip = new JSZip()
         const promises = []
+        // 文件错误
+        const errorList = []
         this.projectCode.forEach(Code => {
           const promise = getProfileFile(Code).then(res => {
             if (!res.success) {
               Message({
                 message: res.message,
                 type: 'error',
-                duration: 5 * 1000
+                duration: 3 * 1000
               })
+              errorList.push(res.success)
               return
             } else {
               const newFile = res.data[0].newFile
@@ -439,14 +454,20 @@ export default {
             }
           })
         })
-        if (promises.length > 0) {
-          Promise.all(promises).then((res) => {
+        Promise.all(promises).then((res) => {
+          if (promises.length > errorList.length) {
             zip.generateAsync({ type: 'blob' }).then(content => {
-              saveAs(content, `${(new Date()).valueOf()}.zip`)
+              saveAs(content, `${this.OutOCode}.zip`)
             })
-            this.profileFileLoading = false
-          })
-        }
+          } else {
+            Message({
+              message: `文件全部发生错误,请联系文件提供方！`,
+              type: 'error',
+              duration: 3 * 1000
+            })
+          }
+          this.profileFileLoading = false
+        })
       }
       // 重置多选框
       this.$refs.detailListButtom.clearSelection()
@@ -468,9 +489,10 @@ export default {
     // 点击某个行数触发
     clickRowList(data) {
     },
-    listDetail(outOId) {
+    listDetail(outOId, OutOCode) {
       this.dialogTableVisible = true
       this.outOId = outOId
+      this.OutOCode = OutOCode
       this.DetailData()
       this.listLoading = true
     },

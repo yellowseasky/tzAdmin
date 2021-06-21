@@ -45,7 +45,6 @@ service.interceptors.response.use(
    */
   response => {
     const res = response.data
-    // console.log('响应', response.status)
     // if the custom status is not 20000, it is judged as an error.
     if (response.status !== 200) {
       Message({

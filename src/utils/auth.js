@@ -2,7 +2,7 @@ import Cookies from 'js-cookie'
 
 const TokenKey = 'vue_admin_template_token'
 const IdKey = 'user'
-const LoginPsw = 'psw'
+const IdPsw = 'password'
 
 export function getToken() {
   return Cookies.get(TokenKey)
@@ -31,13 +31,13 @@ export function removeId() {
 
 // 用户密码
 export function getPsw() {
-  return Cookies.get(LoginPsw)
+  return Cookies.get(IdPsw)
 }
 
 export function setPsw(psw) {
-  return Cookies.set(LoginPsw, psw)
+  return Cookies.set(IdPsw, psw)
 }
 
 export function removePsw() {
-  return Cookies.remove(LoginPsw)
+  return Cookies.remove(IdPsw)
 }

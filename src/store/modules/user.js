@@ -69,7 +69,7 @@ const actions = {
           // })
           dispatch('resetToken')
           router.push({ path: '/login' })
-          return reject('Verification failed, please Login again.')
+          return reject(response.message)
         }
         const { empId, empType } = data
         commit('SET_EMPID', empId)

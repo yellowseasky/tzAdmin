@@ -54,6 +54,7 @@
       </div>
       <el-form ref="ruleForm" :model="ruleForm" status-icon :rules="rules">
         <el-form-item label="当前密码 " prop="oldPass" :label-width="formLabelWidth">
+          <!-- prop="oldPass" -->
           <el-input
             v-model="ruleForm.oldPass"
             :type="PassType.oldPassType"
@@ -101,7 +102,7 @@ import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 import Screenfull from '@/components/Screenfull'
-import { getPsw, setPsw, getId } from '@/utils/auth'
+import { getId } from '@/utils/auth'
 import { modifyPSW } from '@/api/user'
 
 export default {
@@ -111,12 +112,10 @@ export default {
     Screenfull
   },
   data() {
-    // 就密码
+    // 原始密码
     var validateOldPass = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('密码不能为空'))
-      } else if (value !== getPsw()) {
-        callback(new Error('你输入的密码有误'))
       } else {
         callback()
       }
@@ -124,7 +123,7 @@ export default {
     // 新密码
     var validatePass = (rule, value, callback) => {
       if (value === '') {
-        callback(new Error('请输入密码'))
+        callback(new Error('密码不能为空'))
       } else {
         if (this.ruleForm.checkPass !== '') {
           this.$refs.ruleForm.validateField('checkPass')
@@ -135,7 +134,7 @@ export default {
     // 确认新密码
     var validateCheckPass = (rule, value, callback) => {
       if (value === '') {
-        callback(new Error('请再次输入密码'))
+        callback(new Error('密码不能为空'))
       } else if (value !== this.ruleForm.newPass) {
         callback(new Error('两次输入密码不一致!'))
       } else {
@@ -228,24 +227,29 @@ export default {
     submitForm() {
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
-          delete this.ruleForm.checkPass
+          // delete this.ruleForm.checkPass
           modifyPSW(getId(), this.ruleForm.oldPass, this.ruleForm.newPass).then(res => {
-            this.$message({
-              message: '修改成功,请重新登录',
-              type: 'success',
-              duration: 3000
-            })
-            setPsw(this.ruleForm.newPass)
-            this.resetForm()
-            this.$store.dispatch('user/resetToken')
-            this.$router.push(`/login?redirect=${this.$route.fullPath}`)
-          }).catch(err => {
-            this.$message({
-              message: err,
-              type: 'warning'
-            })
+            console.log('RES', res)
+
+            if (res.success) {
+              this.resetForm()
+              this.$message({
+                message: `修改${res.message},请重新登录`,
+                type: 'success',
+                duration: 3000
+              })
+              this.resetForm()
+              this.$store.dispatch('user/resetToken')
+              this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+              this.dialogFormVisible = false
+            } else {
+              this.$message({
+                message: res.message,
+                type: 'error'
+              })
+            }
           })
-          this.dialogFormVisible = false
+          // this.dialogFormVisible = false
         } else {
           this.$message({
             message: '您的操作有误,请重新输入',

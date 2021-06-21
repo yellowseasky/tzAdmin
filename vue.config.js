@@ -36,7 +36,7 @@ module.exports = {
       warnings: false,
       errors: true
     },
-    // before: require('./mock/mock-server.js')
+    // before: require('./mock/mock-server.js') mail.
     proxy: {
       '/api': {
         target: 'http://ctm-tooling.com:9009/api', // 你请求的第三方接口',
