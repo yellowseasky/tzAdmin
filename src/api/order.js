@@ -1,29 +1,5 @@
 import request from '@/utils/request'
 import { getToken } from '@/utils/auth'
-export function supplierOrder() {
-  return request({
-    url: '/DefaultApi/Cmd',
-    method: 'post',
-    data: {
-      ctrl: 'PdmFileUpload',
-      act: 'GetLastVersionByCode',
-      accessToken: getToken(),
-      data:
-      {
-        'bomList': [{
-          bomCode: 'NHY022-0303-P6507'
-        },
-        {
-          bomCode: 'NHY022-0303-P6508'
-        },
-        {
-          bomCode: 'NHY022-0303-P6509'
-        }
-        ]
-      }
-    }
-  })
-}
 // 外协订单
 export function orderList(data) {
   return request({
@@ -35,21 +11,6 @@ export function orderList(data) {
       act: 'GetOutsideOrderList',
       accessToken: getToken(),
       data
-      // {
-      //   pageSize: '20',
-      //   pageNumber: '2',
-      //   empId: '76369973',
-      //   outOType: '',
-      //   sTime: '',
-      //   eTime: ''
-      // }
-      // data:
-      // {
-      //   empId,
-      //   outOType: '',
-      //   sTime,
-      //   eTime
-      // }
     }
   })
 }

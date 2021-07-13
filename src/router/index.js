@@ -90,6 +90,7 @@ export const asyncRoutes = [
   //   component: Layout,
   //   redirect: '/documentation/index',
   //   name: 'documentation1',
+  //   alwaysShow: true,
   //   meta: {
   //     title: 'documentation1',
   //     icon: 'el-icon-s-help',
@@ -105,6 +106,14 @@ export const asyncRoutes = [
   //         roles: ['管理员'] // or you can only set roles in sub nav
   //       }
   //     }
+  // {
+  //   path: 'gong',
+  //   component: () => import('@/views/documentation/gong'),
+  //   name: 'gong',
+  //   meta: {
+  //     title: 'gong1'
+  //   }
+  // }
   //   ]
   // }
 ]

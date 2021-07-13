@@ -35,7 +35,7 @@
       @cell-click="clickRowList"
     >
 
-      <el-table-column align="center" label="ID" width="50">
+      <el-table-column align="center" label="ID" width="70">
         <template slot-scope="{row}">
           <span>{{ row.rownum }}</span>
         </template>

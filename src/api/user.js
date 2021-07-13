@@ -13,7 +13,6 @@ export function getInfo(EmpCode, EmpPassword) {
   return request({
     url: '/DefaultApi/Cmd',
     method: 'post',
-    // data
     data: {
       ctrl: 'Employee',
       act: 'Login',

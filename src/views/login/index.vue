@@ -1,12 +1,6 @@
 <template>
   <div class="login-container">
     <div class="login-box">
-      <div class="header-title">
-        <!-- <div class="logo-img"><img src="../../assets/logo/CPM.png" alt=""></div> -->
-        <!-- <div class="logo-title">
-          天倬供应链资源管理系统
-        </div> -->
-      </div>
       <div class="avatar_box">
         <img src="../../assets/logo/CPM.png" alt="">
       </div>
@@ -59,7 +53,6 @@
 </template>
 
 <script>
-// import { validUsername } from '@/utils/validate'
 import { Message } from 'element-ui'
 import { removeToken } from '@/utils/auth'
 
@@ -103,6 +96,7 @@ export default {
     }
   },
   methods: {
+    // 密码显示或隐藏
     showPwd() {
       if (this.passwordType === 'password') {
         this.passwordType = ''
@@ -113,6 +107,7 @@ export default {
         this.$refs.password.focus()
       })
     },
+    // 登录
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
@@ -134,7 +129,6 @@ export default {
             this.loading = false
           })
         } else {
-          console.log('error submit!!')
           return false
         }
       })
@@ -227,28 +221,6 @@ $border_gray: #ccc;
       }
     }
   }
-  // .header-title {
-  //   display: flex;
-  //   justify-content: center;
-  //   width: 100%;
-  //   height: 25px;
-  //   .logo-img {
-  //     width: 20%;
-  //     height: 100%;
-  //     img {
-  //       width: 100%;
-  //       height: 100%;
-  //     }
-  //   }
-
-  //   .logo-title {
-  //     text-align: start;
-  //     height: 100%;
-  //     font-size: 2vw;
-  //     font-weight: bolder;
-  //     line-height: 100px;
-  //   }
-  // }
   .login-form {
     padding: 65px 35px 0;
     width: 100%;

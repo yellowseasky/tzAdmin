@@ -11,10 +11,10 @@ NProgress.configure({ showSpinner: false }) // NProgress Configuration
 const whiteList = ['/login', '/auth-redirect'] // no redirect whitelist
 
 router.beforeEach(async(to, from, next) => {
-  // start progress bar
+  // 开始进度条
   NProgress.start()
 
-  // set page title
+  // 设置页面标题
   document.title = getPageTitle(to.meta.title)
 
   // determine whether the user has logged in
@@ -22,31 +22,30 @@ router.beforeEach(async(to, from, next) => {
   if (hasToken) {
     if (to.path === '/login') {
       // if is logged in, redirect to the home page
-      console.log('login GO')
       next({ path: '/' })
       NProgress.done()
     } else {
       const hasEmpId = store.getters.empId
-      const hasEmpTypes = store.getters.empType && store.getters.empType.length > 0
+      const hasEmpTypes = store.getters.empType
       if (hasEmpId && hasEmpTypes) {
-        const roleType = store.getters.empType
-        const accessRoutes = await store.dispatch('permission/generateRoutes', roleType)
+        const accessRoutes = await store.dispatch('permission/generateRoutes', hasEmpTypes)
         resetRouter()
         router.addRoutes(accessRoutes)
         next()
       } else {
+        // 刷新了
         try {
           const { empType } = await store.dispatch('user/getInfo', { username: getId(), password: getPsw() })
           store.dispatch('user/getInfo', { username: getId(), password: getPsw() })
           const accessRoutes = await store.dispatch('permission/generateRoutes', empType)
           resetRouter()
           router.addRoutes(accessRoutes)
-          next({ ...to, replace: true })
+          // next({ ...to, replace: true })
           await store.dispatch('user/getInfo', { username: getId(), password: getPsw() })
           next()
         } catch (error) {
           await store.dispatch('user/resetToken')
-          Message.error(error || 'Has Error')
+          Message.error(error || '出错')
           next(`/login?redirect=${to.path}`)
         }
       }
@@ -54,10 +53,10 @@ router.beforeEach(async(to, from, next) => {
   } else {
     /* has no token*/
     if (whiteList.indexOf(to.path) !== -1) {
-      // in the free login whitelist, go directly
+      // 在免费登录白名单中，直接进入
       next()
     } else {
-      // other pages that do not have permission to access are redirected to the login page.
+      // 其他无权访问的页面被重定向到登录页面。
       next(`/login?redirect=${to.path}`)
       NProgress.done()
     }
@@ -65,6 +64,6 @@ router.beforeEach(async(to, from, next) => {
 })
 
 router.afterEach(() => {
-  // finish progress bar
+  // 完成进度条
   NProgress.done()
 })

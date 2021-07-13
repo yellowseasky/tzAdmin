@@ -4,24 +4,15 @@
       <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
       <breadcrumb class="breadcrumb-container" />
       <div class="right-menu">
-        <el-tooltip class="item" effect="dark" :content="currentTime" placement="bottom" :enterable="false">
-          <div class="right-menu-item hover-effect">{{ currentTime }}</div>
-        </el-tooltip>
+        <!-- 当前时间 -->
+        <div class="right-menu-item">{{ currentTime }}</div>
+        <!-- 全屏 -->
         <screenfull id="screenfull" class="right-menu-item hover-effect" />
-        <!-- <el-tooltip class="item" effect="dark" content="退出登录" placement="bottom" :enterable="false"> -->
-        <!-- <el-popconfirm
-            confirm-button-text="继续"
-            cancel-button-text="不用了"
-            icon="el-icon-info"
-            icon-color="red"
-            title="此操作将退出登录, 是否继续?"
-            @onConfirm="outlo"
-          > -->
+        <!-- 退出登录 -->
         <el-tooltip class="item" effect="dark" content="退出登录" placement="bottom" :enterable="false">
-          <svg-icon icon-class="signOut" style="font-size:52px" class="right-menu-item hover-effect" @click="outlo" />
+          <svg-icon icon-class="signOut" style="font-size:52px" class="right-menu-item hover-effect" @click="outlogin" />
         </el-tooltip>
-        <!-- </el-popconfirm> -->
-        <!-- </el-tooltip> -->
+        <!-- 下拉菜单功能 -->
         <el-dropdown class="right-menu-item avatar-container" trigger="click">
           <div class="avatar-wrapper">
             <span class="user-avatar">
@@ -54,7 +45,6 @@
       </div>
       <el-form ref="ruleForm" :model="ruleForm" status-icon :rules="rules">
         <el-form-item label="当前密码 " prop="oldPass" :label-width="formLabelWidth">
-          <!-- prop="oldPass" -->
           <el-input
             v-model="ruleForm.oldPass"
             :type="PassType.oldPassType"
@@ -279,7 +269,7 @@ export default {
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
     },
-    outlo() {
+    outlogin() {
       this.$message({
         type: 'success',
         message: '退出登录成功!'
