@@ -124,6 +124,19 @@ export function timeChange(time) {
   return y + '-' + mouth + '-' + day
 }
 
+// base转blob
+export function base64ToBlob(code) {
+  const parts = code.split(';base64,')
+  // const contentType = parts[0].split(/:(.*?);/)[1]
+  const raw = window.atob(parts)
+  const rawLength = raw.length
+  const uInt8Array = new Uint8Array(rawLength)
+  for (let i = 0; i < rawLength; ++i) {
+    uInt8Array[i] = raw.charCodeAt(i)
+  }
+  return new Blob([uInt8Array], { type: 'application/x-prt' })
+}
+
 // base64转文件下载
 // export function downloadFile(fileName, content) {
 // const blob = base64ToBlob(content)

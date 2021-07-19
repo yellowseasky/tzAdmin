@@ -3,6 +3,7 @@ import Vue from 'vue'
 import 'normalize.css/normalize.css' // A modern alternative to CSS resets
 import 'default-passive-events' // https://blog.csdn.net/weixin_40716786/article/details/90045802
 import ElementUI from 'element-ui'
+import { Message } from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 // import locale from 'element-ui/lib/locale/lang/en' // lang i18n
 import 'element-ui/lib/locale/lang/zh-CN'
@@ -34,6 +35,7 @@ import '@/permission' // permission control
 Vue.use(ElementUI)
 
 Vue.config.productionTip = false
+Vue.prototype.$message = Message
 
 new Vue({
   el: '#app',

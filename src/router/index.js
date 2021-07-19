@@ -73,9 +73,48 @@ export const constantRoutes = [
     children: [
       {
         path: 'index',
-        name: 'Table',
+        name: 'outList',
         component: () => import('@/views/outManagement/index'),
         meta: { title: '外协订单跟踪', icon: 'table' }
+      }
+    ]
+  },
+
+  {
+    path: '/application',
+    component: Layout,
+    redirect: '/application/requisition',
+    alwaysShow: true,
+    meta: { title: '外协申请管理', icon: 'shopping' },
+    children: [
+      {
+        path: 'index',
+        name: 'appliList',
+        component: () => import('@/views/applicationMan/requisition'),
+        meta: { title: '外协申请列表', icon: 'table' }
+      }
+    ]
+  }, // retFactory
+
+  {
+    path: '/retFactory',
+    component: Layout,
+    redirect: '/actory/list',
+    alwaysShow: true,
+    meta: { title: '转序管理', icon: 'form' },
+    children: [
+      {
+        path: 'index',
+        name: 'retFactoryList',
+        component: () => import('@/views/retFactory/list'),
+        meta: { title: '返厂转序单列表', icon: 'table' }
+      },
+      {
+        path: '/add',
+        name: 'addList',
+        hidden: true, // 隐藏
+        component: () => import('@/views/retFactory/addList'),
+        meta: { title: '转序单编辑', icon: 'table' }
       }
     ]
   },

@@ -27,6 +27,7 @@ export default {
           window.location.href = 'http://8.134.73.103:20001/index.html'
         }
       }
+
       // PC端
       // if (window.screen.width >= 768) {
       // }

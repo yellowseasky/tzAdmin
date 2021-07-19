@@ -53,7 +53,7 @@
 </template>
 
 <script>
-import { Message } from 'element-ui'
+
 import { removeToken } from '@/utils/auth'
 
 export default {
@@ -117,7 +117,7 @@ export default {
               this.$router.push({ path: this.redirect || '/' })
               this.loading = false
             }).catch(err => {
-              Message({
+              this.$message({
                 message: err,
                 type: 'error',
                 duration: 5 * 1000
