@@ -25,16 +25,17 @@
 </template>
 
 <script>
-import path from 'path'
-import { isExternal } from '@/utils/validate'
 import Item from './Item'
 import AppLink from './Link'
-import FixiOSBug from './FixiOSBug'
 
+import path from 'path'
+import { isExternal } from '@/utils/validate'
+
+// import FixiOSBug from './FixiOSBug'
 export default {
   name: 'SidebarItem',
   components: { Item, AppLink },
-  mixins: [FixiOSBug],
+  // mixins: [FixiOSBug],
   props: {
     // route object
     item: {
@@ -56,29 +57,30 @@ export default {
     this.onlyOneChild = null
     return {}
   },
+  mounted() {
+  },
   methods: {
     hasOneShowingChild(children = [], parent) {
       const showingChildren = children.filter(item => {
         if (item.hidden) {
           return false
         } else {
-          // Temp set(will be used if only has one showing child)
+          // Temp set(如果只有一个显示孩子，将使用)
           this.onlyOneChild = item
           return true
         }
       })
 
-      // When there is only one child router, the child router is displayed by default
+      // 当只有一个子路由器时，默认显示子路由器
       if (showingChildren.length === 1) {
         return true
       }
 
-      // Show parent if there are no child router to display
+      // 如果没有要显示的子路由器，则显示父级
       if (showingChildren.length === 0) {
         this.onlyOneChild = { ... parent, path: '', noShowingChildren: true }
         return true
       }
-
       return false
     },
     resolvePath(routePath) {

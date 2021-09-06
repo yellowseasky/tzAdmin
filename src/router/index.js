@@ -20,7 +20,7 @@ import Layout from '@/layout'
 
 // name: 'router-name' // 设定路由的名字，一定要填写不然使用<keep-alive>时会出现各种问题
 // meta: {
-//   roles: ['admin', 'editor'] // 设置该路由进入的权限，支持多个权限叠加
+//   roles: ['管理员', '供应商'] // 设置该路由进入的权限，支持多个权限叠加
 //   title: 'title' // 设置该路由在侧边栏和面包屑中展示的名字
 //   icon: 'svg-name' // 设置该路由的图标，支持 svg-class，也支持 el-icon-x element-ui 的 icon
 //   noCache: true // 如果设置为true，则不会被 <keep-alive> 缓存(默认 false)
@@ -64,17 +64,17 @@ export const constantRoutes = [
   },
 
   {
-    path: '/outManagement',
+    path: '/outManage',
     component: Layout,
-    redirect: '/outManagement/index',
-    name: 'Example',
+    redirect: '/outManage/index',
+    // name: 'Example',
     alwaysShow: true,
     meta: { title: '外协外购管理', icon: 'el-icon-s-help' },
     children: [
       {
         path: 'index',
         name: 'outList',
-        component: () => import('@/views/outManagement/index'),
+        component: () => import('@/views/outManage/index'),
         meta: { title: '外协订单跟踪', icon: 'table' }
       }
     ]
@@ -82,24 +82,26 @@ export const constantRoutes = [
 
   {
     path: '/application',
+    // name: 'application',
     component: Layout,
-    redirect: '/application/requisition',
+    redirect: '/application/index',
     alwaysShow: true,
     meta: { title: '外协申请管理', icon: 'shopping' },
     children: [
       {
         path: 'index',
         name: 'appliList',
-        component: () => import('@/views/applicationMan/requisition'),
+        component: () => import('@/views/appManage/requisition'),
         meta: { title: '外协申请列表', icon: 'table' }
       }
     ]
-  }, // retFactory
+  },
 
   {
     path: '/retFactory',
+    // name: 'retFactory',
     component: Layout,
-    redirect: '/actory/list',
+    redirect: '/retFactory/index',
     alwaysShow: true,
     meta: { title: '转序管理', icon: 'form' },
     children: [
@@ -110,8 +112,8 @@ export const constantRoutes = [
         meta: { title: '返厂转序单列表', icon: 'table' }
       },
       {
-        path: '/add',
-        name: 'addList',
+        path: 'add',
+        name: 'addDtailList',
         hidden: true, // 隐藏
         component: () => import('@/views/retFactory/addList'),
         meta: { title: '转序单编辑', icon: 'table' }
@@ -124,38 +126,8 @@ export const constantRoutes = [
 ]
 
 export const asyncRoutes = [
-  // {
-  //   path: '/documentation',
-  //   component: Layout,
-  //   redirect: '/documentation/index',
-  //   name: 'documentation1',
-  //   alwaysShow: true,
-  //   meta: {
-  //     title: 'documentation1',
-  //     icon: 'el-icon-s-help',
-  //     roles: ['管理员']
-  //   },
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       component: () => import('@/views/documentation/index'),
-  //       name: 'indexdocumentation1',
-  //       meta: {
-  //         title: 'indexdocumentation1',
-  //         roles: ['管理员'] // or you can only set roles in sub nav
-  //       }
-  //     }
-  // {
-  //   path: 'gong',
-  //   component: () => import('@/views/documentation/gong'),
-  //   name: 'gong',
-  //   meta: {
-  //     title: 'gong1'
-  //   }
-  // }
-  //   ]
-  // }
 ]
+
 const createRouter = () => new Router({
   // mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),

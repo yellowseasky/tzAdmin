@@ -88,12 +88,14 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 import Screenfull from '@/components/Screenfull'
-import { getId } from '@/utils/auth'
+
+import { mapGetters } from 'vuex'
 import { modifyPSW } from '@/api/user'
+
+// import { getId } from '@/utils/auth'
 
 export default {
   components: {
@@ -114,6 +116,8 @@ export default {
     var validatePass = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('密码不能为空'))
+      } else if (value === this.ruleForm.oldPass) {
+        callback(new Error('新密码不能与旧密码相同'))
       } else {
         if (this.ruleForm.checkPass !== '') {
           this.$refs.ruleForm.validateField('checkPass')
@@ -218,17 +222,18 @@ export default {
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
           // delete this.ruleForm.checkPass
-          modifyPSW(getId(), this.ruleForm.oldPass, this.ruleForm.newPass).then(res => {
+          const { username } = JSON.parse(localStorage.getItem('user'))
+          modifyPSW(username, this.ruleForm.oldPass, this.ruleForm.newPass).then(res => {
             console.log('RES', res)
 
             if (res.success) {
-              this.resetForm()
+              // this.resetForm()
               this.$message({
                 message: `修改${res.message},请重新登录`,
                 type: 'success',
                 duration: 3000
               })
-              this.resetForm()
+              // this.resetForm()
               this.$store.dispatch('user/resetToken')
               this.$router.push(`/login?redirect=${this.$route.fullPath}`)
               this.dialogFormVisible = false
@@ -238,6 +243,7 @@ export default {
                 type: 'error'
               })
             }
+            this.resetForm()
           })
           // this.dialogFormVisible = false
         } else {

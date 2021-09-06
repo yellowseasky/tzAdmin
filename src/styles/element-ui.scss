@@ -48,6 +48,6 @@
   box-sizing: content-box;
 }
 
-// .el-table .cell {
-//   white-space: nowrap;
-// }
+.el-table .cell {
+  white-space: nowrap; // 超过容器则显示省略号不换行
+}

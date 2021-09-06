@@ -1,7 +1,5 @@
 <template>
-  <div class="dashboard-container">
-    <!-- <div class="dashboard-text">欢迎来到天倬外企订单管理系统</div> -->
-  </div>
+  <div class="dashboard-container" />
 </template>
 
 <script>

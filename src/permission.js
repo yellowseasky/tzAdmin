@@ -1,9 +1,10 @@
-import router, { resetRouter } from './router'
+// import router, { resetRouter } from './router'
+import router from './router'
 import store from './store'
 import { Message } from 'element-ui'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
-import { getToken, getId, getPsw } from '@/utils/auth' // get token from cookie
+import { getToken } from '@/utils/auth' // get token from cookie
 import getPageTitle from '@/utils/get-page-title'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
@@ -17,36 +18,28 @@ router.beforeEach(async(to, from, next) => {
   // 设置页面标题
   document.title = getPageTitle(to.meta.title)
 
-  // determine whether the user has logged in
   const hasToken = getToken()
+
   if (hasToken) {
     if (to.path === '/login') {
       // if is logged in, redirect to the home page
       next({ path: '/' })
       NProgress.done()
     } else {
-      const hasEmpId = store.getters.empId
-      const hasEmpTypes = store.getters.empType
-      if (hasEmpId && hasEmpTypes) {
-        const accessRoutes = await store.dispatch('permission/generateRoutes', hasEmpTypes)
-        resetRouter()
-        router.addRoutes(accessRoutes)
+      const hasGetUserEmpId = store.getters.empId
+      if (hasGetUserEmpId) {
         next()
       } else {
-        // 刷新了
         try {
-          const { empType } = await store.dispatch('user/getInfo', { username: getId(), password: getPsw() })
-          store.dispatch('user/getInfo', { username: getId(), password: getPsw() })
-          const accessRoutes = await store.dispatch('permission/generateRoutes', empType)
-          resetRouter()
-          router.addRoutes(accessRoutes)
-          // next({ ...to, replace: true })
-          await store.dispatch('user/getInfo', { username: getId(), password: getPsw() })
+          // 刷新
+          const { username, password } = JSON.parse(localStorage.getItem('user'))
+          await store.dispatch('user/getInfo', { username, password })
           next()
         } catch (error) {
           await store.dispatch('user/resetToken')
-          Message.error(error || '出错')
+          Message.error(error || '出错,请重新登录')
           next(`/login?redirect=${to.path}`)
+          NProgress.done()
         }
       }
     }

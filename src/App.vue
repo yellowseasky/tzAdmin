@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+
     <router-view />
   </div>
 </template>
@@ -13,6 +14,9 @@ export default {
   },
   created() {
 
+  },
+  activated() {
+    history.pushState(null, null, document.URL)
   },
   mounted() {
     this.IsPC()

@@ -1,16 +1,15 @@
 <template>
   <div class="app-container">
-
     <div class="title-box">
       <div class="title">基本信息</div>
       <div v-if="empType == '管理员'?false : true" class="add-list">
-        <router-link to="/add">
+        <router-link to="/retFactory/add">
           <el-button size="small" class="filter-item" type="primary">新增</el-button>
         </router-link>
       </div>
     </div>
     <!-- 表格菜单栏 -->
-    <div class="filter-container">
+    <div v-if="Object.keys(dataList).length" class="filter-container">
       <el-input v-model="searchListId" placeholder="请输入单据编码" style="width: 200px;" class="filter-item" clearable @clear="clearInput" @keyup.enter.native="handleFilter" />
       <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">查询</el-button>
       <datePicker @Time="getTime" />
@@ -26,8 +25,8 @@
       style="width: 100%"
     >
       <el-table-column align="center" label="单据编码" width="140">
-        <template slot-scope="{row}">
-          <span>{{ row.MatHandCode }}</span>
+        <template slot-scope="{row}" size="medium">
+          <el-tag>{{ row.MatHandCode }}</el-tag>
         </template>
       </el-table-column>
 
@@ -51,7 +50,7 @@
 
       <el-table-column align="center" label="签收人">
         <template slot-scope="{row}">
-          <el-tag v-if="row.EmpName_Receive" size="medium">{{ row.EmpName_Receive }}</el-tag>
+          <span v-if="row.EmpName_Receive">{{ row.EmpName_Receive }}</span>
           <span v-else>-</span>
         </template>
       </el-table-column>
@@ -101,11 +100,6 @@
         highlight-current-row
         style="width: 100%"
       >
-        <!-- <el-table-column
-          type="selection"
-          width="55"
-          align="center"
-        /> -->
 
         <el-table-column type="index" label="序号" width="50" align="center" />
 
@@ -153,19 +147,17 @@
 </template>
 
 <script>
-import { transferList, transferListDetai } from '@/api/transferOrder'
-import { mapGetters } from 'vuex'
 import Pagination from '@/components/Pagination'
 import DatePicker from '@/components/DatePicker'
 
+import { transferList, transferListDetail } from '@/api/transferOrder'
+import { mapGetters } from 'vuex'
+
 export default {
-  name: '',
+  name: 'RetFactoryList',
   components: {
     Pagination,
     DatePicker
-  },
-  props: {
-
   },
   data() {
     return {
@@ -190,9 +182,6 @@ export default {
   computed: {
     ...mapGetters(['empId']),
     ...mapGetters(['empType'])
-  },
-  watch: {
-
   },
   mounted() {
     this.getTransferList()
@@ -234,19 +223,26 @@ export default {
     // 获取转序明细数据
     async DetailData() {
       this.detailListLoading = true
-      const { data } = await transferListDetai(this.matHandId)
+      const { data } = await transferListDetail(this.matHandId)
       this.DetailList = data
       this.detailListLoading = false
     },
     // 转序单列表
     async getTransferList() {
       this.listLoading = true
-      this.listQuery.empId = this.empId
-      const { data } = await transferList(this.listQuery)
-      console.log('data', data)
+      try {
+        this.listQuery.empId = this.empId
+        const { data } = await transferList(this.listQuery)
+        this.dataList = data[0].list
+        this.total = data[1].totalCount
+      } catch (error) {
+        this.$message({
+          message: error,
+          type: 'error',
+          duration: 3 * 1000
+        })
+      }
 
-      this.dataList = data[0].list
-      this.total = data[1].totalCount
       this.listLoading = false
     },
     // 关闭对话框

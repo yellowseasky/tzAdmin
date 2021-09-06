@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="add-list">
       <el-button size="small" :loading="subLoading" class="filter-item" type="primary" @click="subArtList">提交</el-button>
-      <!-- <el-button size="small" class="filter-item" type="primary" @click="exportArtList">导出</el-button> -->
+      <el-button size="small" class="filter-item" type="primary" @click="exportArtList">导出</el-button>
     </div>
     <div class="title-box">
       <div class="title">基本信息</div>
@@ -72,8 +72,7 @@
         </el-table-column>
 
       </el-table>
-      <!-- 分页 -->
-      <!-- <pagination v-show="total>listQuery.pageSize" :total="total" :page-size="listQuery.pageSize" :page.sync="listQuery.pageNumber" :limit.sync="listQuery.pageSize" @pagination="pageSize" /> -->
+
       <div slot="footer" class="dialog-footer" align="center">
         <el-button class="filter-item" type="primary" @click="selectList">
           选择
@@ -168,20 +167,16 @@
 </template>
 
 <script>
-import { orderList, orderListDetail } from '@/api/order'
+import Transfer from '@/components/Transfer'
+
+import { orderList, orderListDetail } from '@/api/outManage'
 import { subTransferList } from '@/api/transferOrder'
 import { mapGetters } from 'vuex'
-import Transfer from '@/components/Transfer'
-import { parseTime } from '@/utils'
-// import Pagination from '@/components/Pagination'
-export default {
-  name: '',
-  components: {
-    // Pagination
-    Transfer
-  },
-  props: {
 
+export default {
+  name: 'AddDtailList',
+  components: {
+    Transfer
   },
   data() {
     return {
@@ -198,10 +193,10 @@ export default {
         eTime: ''
       },
       outOIdArr: [],
-      // total: 0, // 外协订单总页
+      OutOCodeArr: [],
+      fileName: null,
       listLoading: true, // 外协订单加载
       listVisible: false, // 外协订单框弹出框
-      downloadLoading: false, // 导出文件加载
       showListVisible: false,
       detailListVisible: false, // 外协详细订单弹出框
       subLoading: false // 提交加载
@@ -210,46 +205,42 @@ export default {
   computed: {
     ...mapGetters(['empId'])
   },
-  watch: {
-  },
-  created() {
-
-  },
   mounted() {
 
   },
   methods: {
     // 导出
     exportArtList() {
-      // const data = this.artifactList.map((dataItem, index) => {
-      //   const { MBomDetCode, MBomDetName, MBomDetSpecification, OutODetNumber, OutODetUnit, MBomDetHRCComment, StorName } = dataItem
-      //   return { MBomDetCode, MBomDetName, MBomDetSpecification, OutODetNumber, OutODetUnit, MBomDetHRCComment, StorName }
-      // })
-      // this.downloadLoading = true
-      alert('还未开发,敬请期待！')
-      // import('@/vendor/Export2Excel').then(excel => {
-      //   const tHeader = ['物料编码', '物料名称', '物料规格', '数量', '物料单位', '热处理要求', '当前仓库']
-      //   const filterVal = ['MBomDetCode', 'MBomDetName', 'MBomDetSpecification', 'OutODetNumber', 'OutODetUnit', 'MBomDetHRCComment', 'StorName']
-      //   const list = this.artifactList
-      //   const value = this.formatJson(filterVal, list)
-      //   excel.export_json_to_excel({
-      //     header: tHeader,
-      //     value,
-      //     filename: this.filename,
-      //     autoWidth: this.autoWidth,
-      //     bookType: this.bookType
-      //   })
-      //   this.downloadLoading = false
-      // })
+      if (this.artifactList.length) {
+        var that = this
+        require.ensure([], () => {
+          const {
+            export_json_to_excel
+          } = require('@/assets/excel/Export2Excel')
+          // 这里使用绝对路径( @表示src文件夹 )，使用@/+存放export2Excel的路径【也可以写成相对于你当前"xxx.vue"文件的相对路径，例如我的页面放在assets文件夹同级下的views文件夹下的“home.vue”里，那这里路径也可以写成"../assets/excel/Export2Excel"】
+          const tHeader = ['物料编码', '物料名称', '物料规格', '数量', '物料单位', '热处理要求', '当前仓库']
+          const filterVal = ['MBomDetCode', 'MBomDetName', 'MBomDetSpecification', 'OutODetNumber', 'OutODetUnit', 'MBomDetHRCComment', 'StorName']
+          const list = this.artifactList
+          const data = that.formatJson(filterVal, list)
+          let fileName = ''
+          if (this.fileName.length > 1) {
+            fileName = '转序订单'
+          } else {
+            fileName = this.fileName[0]
+          }
+          export_json_to_excel(tHeader, data, fileName) // 导出的表格名称，根据需要自己命名
+        })
+      } else {
+        this.$message({
+          message: '当前没有需要导出转序的订单',
+          type: 'error',
+          duration: 3 * 1000
+        })
+      }
     },
+    // 处理导出数据
     formatJson(filterVal, jsonData) {
-      return jsonData.map(v => filterVal.map(j => {
-        if (j === 'timestamp') {
-          return parseTime(v[j])
-        } else {
-          return v[j]
-        }
-      }))
+      return jsonData.map(v => filterVal.map(j => v[j]))
     },
     // 提交
     async subArtList() {
@@ -291,6 +282,7 @@ export default {
     // 外协订单选择
     selectList() {
       if (this.outOIdArr.length > 0) {
+        this.fileName = this.OutOCodeArr
         this.DetailData()
         this.listVisible = false
         this.detailListVisible = true
@@ -318,7 +310,9 @@ export default {
     handleSelectionChange(val) {
       // 根据单据id获取该订单的订单详细
       const outOIdArray = val.map(item => item.OutOId)
+      const fileCodeArray = val.map(item => item.OutOCode)
       this.outOIdArr = outOIdArray
+      this.OutOCodeArr = fileCodeArray
     },
     // 请求外协订单数据
     async getList() {
@@ -326,7 +320,6 @@ export default {
       this.listQuery.empId = this.empId
       const { data } = await orderList(this.listQuery)
       this.list = data[0].list
-      // this.total = data[1].totalCount
       this.listLoading = false
     },
     // 获取订单明细数据
@@ -337,6 +330,7 @@ export default {
         this.DetailList.push(...data)
       })
     },
+    // 打开外协订单
     showList() {
       if (this.artifactList.length > 0) {
         this.showListVisible = true
@@ -346,6 +340,7 @@ export default {
         this.getList()
       }
     },
+    // 重新选择外协订单
     determineChoose() {
       this.artifactList = []
       this.showListVisible = false

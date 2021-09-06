@@ -36,7 +36,7 @@ export function subTransferList(empId, ret) {
 }
 
 // 获取转序单明细
-export function transferListDetai(matHandId) {
+export function transferListDetail(matHandId) {
   return request({
     url: '/DefaultApi/Cmd',
     method: 'post',

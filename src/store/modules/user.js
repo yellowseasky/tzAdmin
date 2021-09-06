@@ -1,12 +1,11 @@
-
 import { login, getInfo } from '@/api/user'
-import { getToken, setToken, removeToken, setId, setPsw, removeId, removePsw } from '@/utils/auth'
+import { setToken, removeToken } from '@/utils/auth'
 // import { Message } from 'element-ui'
-import router, { resetRouter } from '@/router/index'
+import { resetRouter } from '@/router/index'
 
 const getDefaultState = () => {
   return {
-    token: getToken(),
+    token: '',
     empId: '', // 用户ID
     empType: '' // 用户类型
   }
@@ -44,24 +43,28 @@ const actions = {
       })
     })
   },
-  // get user info
+  // 获取用户信息
   getInfo({ dispatch, commit, state }, { username, password }) {
     return new Promise((resolve, reject) => {
       getInfo(username, password).then(response => {
         const { data } = response
         if (!data) {
-          dispatch('resetToken')
-          router.push({ path: '/login' })
+          // dispatch('resetToken')
+          // router.push({ path: '/login' })
           return reject(response.message)
         }
         const { empId, empType } = data
         commit('SET_EMPID', empId)
         commit('SET_EMPTYPE', empType)
-        setId(username)
-        setPsw(password)
+        const user = {
+          username,
+          password
+        }
+        localStorage.setItem('user', JSON.stringify(user))
+
         resolve(data)
-      }).catch(error => {
-        reject(error)
+      }).catch(err => {
+        console.log(err)
       })
     })
   },
@@ -69,9 +72,8 @@ const actions = {
   // 移除token
   resetToken({ commit, dispatch }) {
     return new Promise(resolve => {
+      localStorage.removeItem('user')
       removeToken() // must remove  token  first
-      removeId()
-      removePsw()
       commit('RESET_STATE')
       resetRouter()
       dispatch('tagsView/delAllViews', null, { root: true })
@@ -86,4 +88,3 @@ export default {
   mutations,
   actions
 }
-

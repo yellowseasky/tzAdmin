@@ -117,10 +117,12 @@ export default {
               this.$router.push({ path: this.redirect || '/' })
               this.loading = false
             }).catch(err => {
+              console.log('登录错误')
+
               this.$message({
                 message: err,
                 type: 'error',
-                duration: 5 * 1000
+                duration: 3 * 1000
               })
               removeToken()
               this.loading = false
@@ -140,17 +142,14 @@ export default {
 <style lang="scss">
 /* 修复input 背景不协调 和光标变色 */
 /* Detail see https://github.com/PanJiaChen/vue-element-admin/pull/927 */
-
 $bg:#fff;
 $light_gray:rgb(20, 20, 20);
 $cursor: rgb(54, 54, 54);
-
 @supports (-webkit-mask: none) and (not (cater-color: $cursor)) {
   .login-container .el-input input {
     color: $cursor;
   }
 }
-
 /* reset element-ui css */
 .login-container {
   .el-input {
@@ -172,7 +171,6 @@ $cursor: rgb(54, 54, 54);
       }
     }
   }
-
   .el-form-item {
     background: $bg;
     border-radius:5px;
@@ -232,19 +230,16 @@ $border_gray: #ccc;
       box-shadow: 0 0 2px $border_gray,0 0 2px $border_gray;
     }
   }
-
   .tips {
     font-size: 14px;
     color: #fff;
     margin-bottom: 10px;
-
     span {
       &:first-of-type {
         margin-right: 16px;
       }
     }
   }
-
   .svg-container {
     padding: 6px 5px 6px 15px;
     color: $dark_gray;
@@ -252,7 +247,6 @@ $border_gray: #ccc;
     width: 30px;
     display: inline-block;
   }
-
   .title-container {
     position: relative;
     border-bottom: 2px solid $border_gray;
@@ -275,13 +269,11 @@ $border_gray: #ccc;
     cursor: pointer;
     user-select: none;
   }
-
   .thirdparty-button {
     position: absolute;
     right: 0;
     bottom: 6px;
   }
-
   @media only screen and (max-width: 1480px) {
     .login-box {
       top: 50%;
@@ -292,7 +284,6 @@ $border_gray: #ccc;
       }
     }
   }
-
   @media only screen and (max-width: 1200px) {
     .login-box {
       transform: translate(-50%, -50%);
@@ -301,6 +292,5 @@ $border_gray: #ccc;
       left: 50%;
     }
   }
-
 }
 </style>
