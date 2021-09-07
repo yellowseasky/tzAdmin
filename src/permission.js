@@ -44,6 +44,7 @@ router.beforeEach(async(to, from, next) => {
       }
     }
   } else {
+    localStorage.removeItem('user')
     /* has no token*/
     if (whiteList.indexOf(to.path) !== -1) {
       // 在免费登录白名单中，直接进入

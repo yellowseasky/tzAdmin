@@ -117,8 +117,6 @@ export default {
               this.$router.push({ path: this.redirect || '/' })
               this.loading = false
             }).catch(err => {
-              console.log('登录错误')
-
               this.$message({
                 message: err,
                 type: 'error',

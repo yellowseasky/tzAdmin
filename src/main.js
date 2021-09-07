@@ -44,5 +44,3 @@ new Vue({
   render: h => h(App)
 })
 
-console.log('this', this)
-
