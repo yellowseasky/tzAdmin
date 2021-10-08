@@ -159,7 +159,6 @@ import DatePicker from '@/components/DatePicker'
 
 import { orderList, orderListDetail } from '@/api/appManage'
 import { getNewFile, getProfileFile } from '@/api/outManage'
-import { mapGetters } from 'vuex'
 
 import { base64ToBlob } from '@/utils/index'
 import { saveAs } from 'file-saver'
@@ -225,9 +224,6 @@ export default {
       profileFileLoading: false, // 下载型面文件加载
       searchListId: '' // 搜索数据
     }
-  },
-  computed: {
-    ...mapGetters(['empId'])
   },
   mounted() {
     this.getList()
@@ -380,7 +376,8 @@ export default {
     // 请求外协订单数据
     async getList() {
       this.listLoading = true
-      this.listQuery.empId = this.empId
+      const { empId } = JSON.parse(localStorage.getItem('userInfo'))
+      this.listQuery.empId = empId
       const { data } = await orderList(this.listQuery)
       this.list = data[0].list
       this.total = data[1].totalCount

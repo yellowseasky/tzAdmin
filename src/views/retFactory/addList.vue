@@ -171,7 +171,6 @@ import Transfer from '@/components/Transfer'
 
 import { orderList, orderListDetail } from '@/api/outManage'
 import { subTransferList } from '@/api/transferOrder'
-import { mapGetters } from 'vuex'
 
 export default {
   name: 'AddDtailList',
@@ -201,12 +200,6 @@ export default {
       detailListVisible: false, // 外协详细订单弹出框
       subLoading: false // 提交加载
     }
-  },
-  computed: {
-    ...mapGetters(['empId'])
-  },
-  mounted() {
-
   },
   methods: {
     // 导出
@@ -317,7 +310,8 @@ export default {
     // 请求外协订单数据
     async getList() {
       this.listLoading = true
-      this.listQuery.empId = this.empId
+      const { empId } = JSON.parse(localStorage.getItem('userInfo'))
+      this.listQuery.empId = empId
       const { data } = await orderList(this.listQuery)
       this.list = data[0].list
       this.listLoading = false

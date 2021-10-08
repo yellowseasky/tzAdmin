@@ -151,7 +151,6 @@ import Pagination from '@/components/Pagination'
 import DatePicker from '@/components/DatePicker'
 
 import { transferList, transferListDetail } from '@/api/transferOrder'
-import { mapGetters } from 'vuex'
 
 export default {
   name: 'RetFactoryList',
@@ -164,6 +163,7 @@ export default {
       dataList: [],
       DetailList: [],
       matHandId: null,
+      empType: '',
       listQuery: {
         pageSize: 20,
         pageNumber: 1,
@@ -179,11 +179,9 @@ export default {
       searchListId: '' // 搜索数据
     }
   },
-  computed: {
-    ...mapGetters(['empId']),
-    ...mapGetters(['empType'])
-  },
   mounted() {
+    const { empType } = JSON.parse(localStorage.getItem('userInfo'))
+    this.empType = empType
     this.getTransferList()
   },
   methods: {
@@ -231,7 +229,8 @@ export default {
     async getTransferList() {
       this.listLoading = true
       try {
-        this.listQuery.empId = this.empId
+        const { empId } = JSON.parse(localStorage.getItem('userInfo'))
+        this.listQuery.empId = empId
         const { data } = await transferList(this.listQuery)
         this.dataList = data[0].list
         this.total = data[1].totalCount

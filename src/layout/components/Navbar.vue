@@ -95,8 +95,6 @@ import Screenfull from '@/components/Screenfull'
 import { mapGetters } from 'vuex'
 import { modifyPSW } from '@/api/user'
 
-// import { getId } from '@/utils/auth'
-
 export default {
   components: {
     Breadcrumb,
@@ -136,6 +134,7 @@ export default {
       }
     }
     return {
+      empType: '',
       timer: '', // 定义一个定时器的变量
       currentTime: null, // 获取当前时间
       dialogFormVisible: false,
@@ -168,8 +167,7 @@ export default {
   computed: {
     ...mapGetters([
       'sidebar',
-      'avatar',
-      'empType'
+      'avatar'
     ])
   },
   created() {
@@ -190,6 +188,8 @@ export default {
     }
   },
   mounted() {
+    const { empType } = JSON.parse(localStorage.getItem('userInfo'))
+    this.empType = empType
   },
   methods: {
     // 关闭对话框
