@@ -5,9 +5,7 @@ const getters = {
   cachedViews: state => state.tagsView.cachedViews, // 已缓存视图
   token: state => state.user.token,
   avatar: state => state.user.avatar,
-  name: state => state.user.name,
-  empId: state => state.user.empId,
+  name: state => state.user.name
   // permission_routes: state => state.permission.routes,
-  empType: state => state.user.empType // 用户类型
 }
 export default getters

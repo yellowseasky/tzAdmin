@@ -206,7 +206,6 @@ import Pagination from '@/components/Pagination'
 import DatePicker from '@/components/DatePicker'
 
 import { orderList, orderListDetail, getNewFile, getProfileFile } from '@/api/outManage'
-import { mapGetters } from 'vuex'
 
 import { timeChange } from '@/utils'
 import JSZip from 'jszip'
@@ -284,13 +283,8 @@ export default {
       searchListId: '' // 搜索数据
     }
   },
-  computed: {
-    ...mapGetters(['empId'])
-  },
   created() {
     this.getList()
-  },
-  mounted() {
   },
   methods: {
     getTime(startTime, endTime) {
@@ -350,7 +344,8 @@ export default {
     async getList() {
       this.listLoading = true
       try {
-        this.listQuery.empId = this.empId
+        const { empId } = JSON.parse(localStorage.getItem('userInfo'))
+        this.listQuery.empId = empId
         const { data } = await orderList(this.listQuery)
         this.list = data[0].list
         this.total = data[1].totalCount
@@ -452,6 +447,7 @@ export default {
             }
           })
         })
+        console.log('promises', promises)
         Promise.all(promises).then((res) => {
           if (promises.length > errorList.length) {
             zip.generateAsync({ type: 'blob' }).then(content => {

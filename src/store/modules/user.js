@@ -1,13 +1,10 @@
 import { login, getInfo } from '@/api/user'
 import { setToken, removeToken } from '@/utils/auth'
-// import { Message } from 'element-ui'
 import { resetRouter } from '@/router/index'
 
 const getDefaultState = () => {
   return {
-    token: '',
-    empId: '', // 用户ID
-    empType: '' // 用户类型
+    token: ''
   }
 }
 
@@ -19,12 +16,6 @@ const mutations = {
   },
   SET_TOKEN: (state, token) => {
     state.token = token
-  },
-  SET_EMPID: (state, empId) => {
-    state.empId = empId
-  },
-  SET_EMPTYPE: (state, empType) => {
-    state.empType = empType
   }
 
 }
@@ -49,18 +40,15 @@ const actions = {
       getInfo(username, password).then(response => {
         const { data } = response
         if (!data) {
-          // dispatch('resetToken')
-          // router.push({ path: '/login' })
           return reject(response.message)
         }
+
         const { empId, empType } = data
-        commit('SET_EMPID', empId)
-        commit('SET_EMPTYPE', empType)
-        const user = {
-          username,
-          password
+        const userInfo = {
+          empId,
+          empType
         }
-        localStorage.setItem('user', JSON.stringify(user))
+        localStorage.setItem('userInfo', JSON.stringify(userInfo))
 
         resolve(data)
       }).catch(err => {
@@ -72,7 +60,7 @@ const actions = {
   // 移除token
   resetToken({ commit, dispatch }) {
     return new Promise(resolve => {
-      localStorage.removeItem('user')
+      localStorage.removeItem('userInfo')
       removeToken() // must remove  token  first
       commit('RESET_STATE')
       resetRouter()

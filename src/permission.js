@@ -26,21 +26,27 @@ router.beforeEach(async(to, from, next) => {
       next({ path: '/' })
       NProgress.done()
     } else {
-      const hasGetUserEmpId = store.getters.empId
+      const { empId } = JSON.parse(localStorage.getItem('userInfo'))
+      const hasGetUserEmpId = empId
       if (hasGetUserEmpId) {
         next()
       } else {
-        try {
-          // 刷新
-          const { username, password } = JSON.parse(localStorage.getItem('user'))
-          await store.dispatch('user/getInfo', { username, password })
-          next()
-        } catch (error) {
-          await store.dispatch('user/resetToken')
-          Message.error(error || '出错,请重新登录')
-          next(`/login?redirect=${to.path}`)
-          NProgress.done()
-        }
+        // try {
+        // 刷新
+        // const { username, password } = JSON.parse(localStorage.getItem('user'))
+        // await store.dispatch('user/getInfo', { username, password })
+        //   next()
+        // } catch (error) {
+        //   await store.dispatch('user/resetToken')
+        //   Message.error(error || '出错,请重新登录')
+        //   next(`/login?redirect=${to.path}`)
+        //   NProgress.done()
+        // }
+
+        await store.dispatch('user/resetToken')
+        Message.error('用户ID丢失,请重新登录')
+        next(`/login?redirect=${to.path}`)
+        NProgress.done()
       }
     }
   } else {
