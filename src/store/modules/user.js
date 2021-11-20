@@ -4,7 +4,8 @@ import { resetRouter } from '@/router/index'
 
 const getDefaultState = () => {
   return {
-    token: ''
+    token: '',
+    roles: null
   }
 }
 
@@ -16,6 +17,9 @@ const mutations = {
   },
   SET_TOKEN: (state, token) => {
     state.token = token
+  },
+  SET_ROLES: (state, roles) => {
+    state.roles = roles
   }
 
 }
@@ -49,7 +53,7 @@ const actions = {
           empType
         }
         localStorage.setItem('userInfo', JSON.stringify(userInfo))
-
+        commit('SET_ROLES', userInfo.empType)
         resolve(data)
       }).catch(err => {
         console.log(err)
@@ -63,6 +67,8 @@ const actions = {
       localStorage.removeItem('userInfo')
       removeToken() // must remove  token  first
       commit('RESET_STATE')
+      commit('SET_ROLES', [])
+      commit('SET_TOKEN', '')
       resetRouter()
       dispatch('tagsView/delAllViews', null, { root: true })
       resolve()

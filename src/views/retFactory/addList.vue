@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="add-list">
       <el-button size="small" :loading="subLoading" class="filter-item" type="primary" @click="subArtList">提交</el-button>
-      <el-button size="small" class="filter-item" type="primary" @click="exportArtList">导出</el-button>
+      <el-button size="small" class="filter-item" type="primary" @click="exportArtList">导出excel</el-button>
     </div>
     <div class="title-box">
       <div class="title">基本信息</div>

@@ -3,7 +3,7 @@
     <!-- 表格菜单栏 -->
     <div v-if="Object.keys(list).length" class="filter-container">
       <el-input v-model="searchListId" placeholder="请输入单据编号" style="width: 200px;" class="filter-item" clearable @clear="clearInput" @keyup.enter.native="handleFilter" />
-      <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">查询</el-button>
+      <el-button class="filter-item" style="margin-right:10px;" type="primary" icon="el-icon-search" @click="handleFilter">查询</el-button>
       <!-- 穿梭框 -->
       <datePicker @Time="getTime" />
     </div>
@@ -467,18 +467,6 @@ export default {
       this.$refs.detailListButtom.clearSelection()
       this.profileFileLoading = false
     },
-    // base转blob
-    // base64ToBlob(code) {
-    //   const parts = code.split(';base64,')
-    //   // const contentType = parts[0].split(/:(.*?);/)[1]
-    //   const raw = window.atob(parts)
-    //   const rawLength = raw.length
-    //   const uInt8Array = new Uint8Array(rawLength)
-    //   for (let i = 0; i < rawLength; ++i) {
-    //     uInt8Array[i] = raw.charCodeAt(i)
-    //   }
-    //   return new Blob([uInt8Array], { type: 'application/x-prt' })
-    // },
 
     // 点击某个行数触发
     clickRowList(data) {
@@ -517,8 +505,6 @@ export default {
     vertical-align: middle;
     margin-bottom: 20px;
   }
-  .el-button {
-    margin-right: 20px;
-  }
+
 }
 </style>

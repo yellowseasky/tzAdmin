@@ -1,5 +1,12 @@
 <template>
   <div class="app-container">
+    <!-- 表格菜单栏 -->
+    <div v-if="Object.keys(dataList).length" class="filter-container">
+      <el-input v-model="searchListId" placeholder="请输入单据编码" style="width: 200px;" class="filter-item" clearable @clear="clearInput" @keyup.enter.native="handleFilter" />
+      <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">查询</el-button>
+      <datePicker @Time="getTime" />
+    </div>
+
     <div class="title-box">
       <div class="title">基本信息</div>
       <div v-if="empType == '管理员'?false : true" class="add-list">
@@ -7,12 +14,6 @@
           <el-button size="small" class="filter-item" type="primary">新增</el-button>
         </router-link>
       </div>
-    </div>
-    <!-- 表格菜单栏 -->
-    <div v-if="Object.keys(dataList).length" class="filter-container">
-      <el-input v-model="searchListId" placeholder="请输入单据编码" style="width: 200px;" class="filter-item" clearable @clear="clearInput" @keyup.enter.native="handleFilter" />
-      <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">查询</el-button>
-      <datePicker @Time="getTime" />
     </div>
 
     <el-table

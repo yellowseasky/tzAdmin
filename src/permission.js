@@ -22,14 +22,22 @@ router.beforeEach(async(to, from, next) => {
 
   if (hasToken) {
     if (to.path === '/login') {
-      // if is logged in, redirect to the home page
       next({ path: '/' })
       NProgress.done()
     } else {
-      const { empId } = JSON.parse(localStorage.getItem('userInfo'))
-      const hasGetUserEmpId = empId
+      const userInfo = JSON.parse(localStorage.getItem('userInfo'))
+      const hasGetUserEmpId = userInfo.empId
+      const hasRoles = userInfo.empType
       if (hasGetUserEmpId) {
-        next()
+        const isAddRoutes = store.getters.addRoutes.length
+        if (!isAddRoutes) {
+          const accessRoutes = await store.dispatch('permission/generateRoutes', hasRoles)
+          router.addRoutes(accessRoutes)
+          next({ path: '/' })
+        } else {
+          next()
+        }
+        // next()
       } else {
         // try {
         // 刷新
@@ -42,7 +50,6 @@ router.beforeEach(async(to, from, next) => {
         //   next(`/login?redirect=${to.path}`)
         //   NProgress.done()
         // }
-
         await store.dispatch('user/resetToken')
         Message.error('用户ID丢失,请重新登录')
         next(`/login?redirect=${to.path}`)

@@ -33,11 +33,6 @@ import Layout from '@/layout'
 //   activeMenu: '/article/list'
 // }
 
-/**
- * constantRoutes
- * a base page that does not have permission requirements
- * all roles can be accessed
- */
 export const constantRoutes = [
   {
     path: '/login',
@@ -51,7 +46,7 @@ export const constantRoutes = [
     hidden: true
   },
 
-  {
+  { // 企业总览
     path: '/',
     component: Layout,
     redirect: '/dashboard',
@@ -63,30 +58,29 @@ export const constantRoutes = [
     }]
   },
 
-  {
-    path: '/outManage',
+  { // 外协订单跟踪
+    path: '/orderTracking',
     component: Layout,
-    redirect: '/outManage/index',
-    // name: 'Example',
+    redirect: '/orderTracking/index',
     alwaysShow: true,
-    meta: { title: '外协外购管理', icon: 'el-icon-s-help' },
+    meta: { title: '外协外购管理', icon: 'qutsourcing' },
     children: [
       {
         path: 'index',
         name: 'outList',
-        component: () => import('@/views/outManage/index'),
+        component: () => import('@/views/orderTracking/index'),
         meta: { title: '外协订单跟踪', icon: 'table' }
       }
     ]
   },
 
-  {
+  { // 外协申请管理
     path: '/application',
     // name: 'application',
     component: Layout,
     redirect: '/application/index',
     alwaysShow: true,
-    meta: { title: '外协申请管理', icon: 'shopping' },
+    meta: { title: '外协申请管理', icon: 'application' },
     children: [
       {
         path: 'index',
@@ -97,7 +91,7 @@ export const constantRoutes = [
     ]
   },
 
-  {
+  { // 转序管理
     path: '/retFactory',
     // name: 'retFactory',
     component: Layout,
@@ -119,13 +113,47 @@ export const constantRoutes = [
         meta: { title: '转序单编辑', icon: 'table' }
       }
     ]
+  }
+]
+
+export const asyncRoutes = [
+  { // 保价信息管理
+    path: '/quotation',
+    component: Layout,
+    redirect: '/quotation/list',
+    alwaysShow: true,
+    meta: {
+      title: '报价信息管理',
+      icon: 'quotation',
+      roles: ['管理员', '供应商']
+    },
+    children: [
+      {
+        path: 'list',
+        name: 'quotationList',
+        component: () => import('@/views/quotationInfo/list'),
+        meta: {
+          title: '报价单',
+          icon: 'table',
+          roles: ['管理员']
+        }
+      },
+      {
+        path: 'lnquiryList',
+        name: 'lnqList',
+        component: () => import('@/views/quotationInfo/InquiryList'),
+        meta: {
+          title: '询价单',
+          icon: 'table',
+          roles: ['供应商']
+        }
+      }
+    ]
+
   },
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
-]
-
-export const asyncRoutes = [
 ]
 
 const createRouter = () => new Router({

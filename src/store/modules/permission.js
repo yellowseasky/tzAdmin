@@ -50,13 +50,17 @@ const actions = {
     return new Promise(resolve => {
       let accessedRoutes
       if (roles === '管理员') {
-        accessedRoutes = asyncRoutes || []
+        // accessedRoutes = asyncRoutes || []
+        accessedRoutes = filterAsyncRoutes(asyncRoutes, roles) || []
       } else {
         accessedRoutes = filterAsyncRoutes(asyncRoutes, roles)
       }
       commit('SET_ROUTES', accessedRoutes)
       resolve(accessedRoutes)
     })
+  },
+  clearAddRoutes({ commit }) {
+    commit('SET_ROUTES', [])
   }
 }
 

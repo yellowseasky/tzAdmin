@@ -281,6 +281,7 @@ export default {
         message: '退出登录成功!'
       })
       this.$store.dispatch('user/resetToken')
+      this.$store.dispatch('permission/clearAddRoutes')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     }
   }
